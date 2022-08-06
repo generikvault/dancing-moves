@@ -34,6 +34,7 @@ const config: PlaywrightTestConfig = {
   reporter:
     [
       ['html'],
+      ['allure-playwright'],
       [
         '@bgotink/playwright-coverage',
       /** @type {import('@bgotink/playwright-coverage').CoverageReporterOptions} */ {

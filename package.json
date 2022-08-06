@@ -8,7 +8,9 @@
     "build:github": "ng build --configuration production --base-href https://mvolkert.github.io",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "deploy": "ng deploy --base-href=/dancing-moves/ --no-silent"
+    "deploy": "ng deploy --base-href=/dancing-moves/ --no-silent",
+    "e2e": "npx playwright test && npx playwright show-report",
+    "allure": "npx allure generate allure-results -o allure-report --clean && npx allure open allure-report"
   },
   "private": true,
   "dependencies": {
@@ -45,6 +47,8 @@
     "@types/jasmine": "~4.0.3",
     "@types/node": "~16.11.7",
     "@types/uuid": "^8.3.4",
+    "allure-commandline": "^2.18.1",
+    "allure-playwright": "^2.0.0-beta.18",
     "angular-cli-ghpages": "~1.0.3",
     "buffer": "~6.0.3",
     "jasmine-core": "~4.3.0",

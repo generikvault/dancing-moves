@@ -1,5 +1,6 @@
 import { test, expect } from '@bgotink/playwright-coverage';
 import { chromium } from '@playwright/test';
+import { allure } from "allure-playwright";
 /*
 test('homepage has Playwright in title and get started link linking to the intro page', async ({ page }) => {
   await page.goto('https://playwright.dev/');
@@ -33,6 +34,7 @@ test.describe('basic functions', () => {
   });
 
   test('test dancing moves', async ({ page }) => {
+    allure.story("Some Story");
     // Go to baseUrl/move/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape
     await page.goto(`/move/new`);
     // Click mat-nav-list[role="navigation"] >> text=Dances
