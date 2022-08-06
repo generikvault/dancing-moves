@@ -30,6 +30,7 @@ test.describe('basic functions', () => {
   test.beforeAll(async () => {
     browser = await chromium.launch();
     const page = await browser.newPage();
+    test.setTimeout(120000);
     await page.goto(``);
   });
 
