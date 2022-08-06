@@ -250,7 +250,7 @@ export class ApiclientService {
       containedMoves: this.stringToArray(row[10]),
       relatedMoves: this.stringToArray(row[11]),
       relatedMovesOtherDances: this.stringToArray(row[12]),
-      videoname: row[13],
+      videoname: row[13]?.split(',').flatMap((v: string) => v.split('\n')),
       media: row[14],
       links: row[15],
       toDo: row[16],
@@ -328,7 +328,7 @@ export class ApiclientService {
     return [moveDto.name, moveDto.dance, moveDto.description, moveDto.descriptionEng,
     String(moveDto.order), moveDto.count, String(moveDto.nameVerified),
     moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.containedMoves?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
-    moveDto.videoname, moveDto.media, moveDto.links, moveDto.toDo, moveDto.id]
+    moveDto.videoname.join(','), moveDto.media, moveDto.links, moveDto.toDo, moveDto.id]
   }
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {

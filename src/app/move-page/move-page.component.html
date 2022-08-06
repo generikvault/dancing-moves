@@ -26,9 +26,10 @@
     </mat-form-field>
     <mat-form-field appearance="fill" class="half-width">
         <mat-label>Type</mat-label>
-        <mat-select formControlName="type">
+        <input type="text" matInput formControlName="type" [matAutocomplete]="autoType" matAutocompletePosition="below">
+        <mat-autocomplete #autoType="matAutocomplete">
             <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
-        </mat-select>
+        </mat-autocomplete>
     </mat-form-field>
     <mat-checkbox formControlName="nameVerified" class="half-width">Name Verified</mat-checkbox>
     <mat-form-field appearance="fill" class="full-width-adaptive">
@@ -73,9 +74,12 @@
             </mat-optgroup>
         </mat-select>
     </mat-form-field>
-    <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
+    <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>ToDo</mat-label>
-        <input matInput formControlName="toDo">
+        <input type="text" matInput formControlName="toDo" [matAutocomplete]="autoToDo" matAutocompletePosition="below">
+        <mat-autocomplete #autoToDo="matAutocomplete">
+            <mat-option *ngFor="let toDo of toDos" [value]="toDo">{{toDo}}</mat-option>
+        </mat-autocomplete>
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>links</mat-label>
@@ -83,14 +87,23 @@
     </mat-form-field>
     <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
         <mat-label>videoname</mat-label>
-        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-            formControlName="videoname">
+        <mat-chip-list #chipList aria-label="videoname selection">
+            <mat-chip *ngFor="let videoname of moveForm.value.videoname" (removed)="remove(videoname)"
+                (click)="changeSelected(videoname)">
+                {{videoname}}
+                <button matChipRemove>
+                    <mat-icon>cancel</mat-icon>
+                </button>
+            </mat-chip>
+            <input placeholder="add videoname" #videonameInput [formControl]="videonameControl"
+                [matAutocomplete]="autoVideoname" [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
+        </mat-chip-list>
+        <mat-autocomplete #autoVideoname="matAutocomplete" (optionSelected)="selected($event)">
+            <mat-option *ngFor="let videoname of videoNames" [value]="videoname">{{videoname}}</mat-option>
+        </mat-autocomplete>
     </mat-form-field>
-   
-    <mat-form-field *ngIf="!readonly">
-        <mat-label>the field that nobody sees</mat-label>
-        <textarea></textarea>
-    </mat-form-field>
+
     <div formArrayName="courseDates">
         <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i" class="full-width">
             <mat-form-field appearance="fill" class="half-width">

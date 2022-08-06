@@ -20,7 +20,7 @@ export class DanceMoveSelectionComponent implements OnInit {
 
   dances = new Set<string>();
   courseNames = new Set<string>();
-  types = new Set<string>();
+  types = new Array<string>();
   movesGroup: MoveGroupDto[] = [];
   loading = true;
   isAdmin = false;
@@ -122,9 +122,9 @@ export class DanceMoveSelectionComponent implements OnInit {
     this.sortControl.setValue(null);
   }
 
-  remove(fruit: string): void {
+  remove(key: string | unknown): void {
     const sortKeys = this.searchForm.get("sort")?.value;
-    const index = sortKeys.indexOf(fruit);
+    const index = sortKeys.indexOf(key);
 
     if (index >= 0) {
       sortKeys.splice(index, 1);

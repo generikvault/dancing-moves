@@ -1,5 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent, MatChipSelectionChange } from '@angular/material/chips';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -18,9 +21,12 @@ import { deepCopy, nameExistsValidator } from '../util/util';
   styleUrls: ['./move-page.component.css']
 })
 export class MovePageComponent implements OnInit, OnDestroy {
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   move: MoveDto | undefined;
   dances = new Array<string>();
-  types = new Set<string>();
+  types = new Array<string>();
+  toDos = new Array<string>();
+  videoNames = new Array<string>();
   courseNames = new Set<string>();
   moveForm = this.create_form();
   movesGroup: MoveGroupDto[] | undefined;
@@ -33,6 +39,9 @@ export class MovePageComponent implements OnInit, OnDestroy {
   subscriptionsGlobal = new Array<Subscription>();
   subscriptions = new Array<Subscription>();
   description: string = "";
+
+  @ViewChild('videonameInput') videonameInput!: ElementRef<HTMLInputElement>;
+  videonameControl = new UntypedFormControl("");
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
@@ -57,7 +66,6 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.moveForm = this.create_form();
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
-    this.types = this.dataManager.getTypes();
     this.otherMovesNames.add("new");
 
     if (this.idParam == "new") {
@@ -109,7 +117,16 @@ export class MovePageComponent implements OnInit, OnDestroy {
       this.move.courseDates = value.courseDates;
       this.danceMoves = this.dataManager.getMovesOf(this.move?.dance);
       this.description = this.dataManager.enrichDescription(this.move);
+      this.types = this.dataManager.getTypes().filter(x => x.includes(value.type));
+      if (this.types.length == 1 && value.type == this.types[0]) {
+        this.types = this.dataManager.getTypes();
+      }
+      this.toDos = this.dataManager.getToDos().filter(x => x.includes(value.toDo));
     }));
+    this.videoNames = this.dataManager.getVideoNames();
+    this.videonameControl.valueChanges.subscribe(value => {
+      this.videoNames = this.dataManager.getVideoNames().filter(x => !value || x.includes(value));
+    });
     if (this.move) {
       this.moveForm.patchValue(this.move);
     }
@@ -136,7 +153,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
       containedMoves: new UntypedFormControl([]),
       relatedMoves: new UntypedFormControl([]),
       relatedMovesOtherDances: new UntypedFormControl([]),
-      videoname: new UntypedFormControl(''),
+      videoname: new UntypedFormControl([]),
       description: new UntypedFormControl(''),
       toDo: new UntypedFormControl(''),
       links: new UntypedFormControl(''),
@@ -220,5 +237,43 @@ export class MovePageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.subscriptionsGlobal.forEach(s => s.unsubscribe());
+  }
+
+  add(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    if (value) {
+      let videoNames = this.moveForm.get("videoname")?.value;
+      videoNames = Array.isArray(videoNames) ? videoNames : new Array<string>();
+      videoNames.push(value);
+      this.moveForm.get("videoname")?.setValue(videoNames);
+    }
+    event.chipInput!.clear();
+    this.videonameControl.setValue(null);
+  }
+
+  remove(key: string | unknown): void {
+    const videoNames = this.moveForm.get("videoname")?.value;
+    const index = videoNames.indexOf(key);
+
+    if (index >= 0) {
+      videoNames.splice(index, 1);
+      this.moveForm.get("videoname")?.setValue(videoNames);
+    }
+  }
+
+  selected(event: MatAutocompleteSelectedEvent): void {
+    const videoNames = this.moveForm.get("videoname")?.value;
+    videoNames.push(event.option.viewValue);
+    this.moveForm.get("videoname")?.setValue(videoNames);
+    this.videonameInput.nativeElement.value = '';
+    this.videonameControl.setValue(null);
+  }
+
+  changeSelected(name: string | unknown): void {
+    const videoname = name as string;
+    const video = this.move?.videos.find(v => videoname?.includes(v.name));
+    if (video) {
+      window.open(video.link);
+    }
   }
 }

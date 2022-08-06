@@ -39,6 +39,12 @@ export class DataManagerService {
   movesLenghtSorted!: MoveDto[];
   coursesLenghtSorted!: CourseDto[];
 
+  movesNames = new Set<string>();
+  danceNames = new Set<string>();
+  types = new Array<string>();
+  toDos = new Array<string>();
+  videoNames = new Array<string>();
+
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
       this.searchFilterObservable.next({ dance: params['dance'], move: params['move'], courses: this.readArrayParam(params, 'courses'), notcourse: params['notcourse'], type: params['type'], related: params['related'], todo: params['todo'], script: params['script'], sort: this.readArrayParam(params, 'sort', ["dance", "courseDate", "order", "name"]) });
@@ -49,6 +55,12 @@ export class DataManagerService {
       this.relationsSelectionObservable.next({ relationTypes: this.readArrayParam(params, "relationTypes", [RelationType.start, RelationType.end]), displayType: displayTypeParam });
     })
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
+    this.movesObservable.subscribe(moves => {
+      this.movesNames = new Set(moves.map(move => move.name));
+      this.danceNames = new Set(moves.map(move => move.dance));
+      this.types = Array.from(new Set(moves.map(move => move.type)));
+      this.toDos = Array.from(new Set(moves.map(move => move.toDo).filter(toDo => toDo)));
+    });
   }
 
 
@@ -98,7 +110,7 @@ export class DataManagerService {
 
   private linkCourseContents = (move: MoveDto) => {
     if (move.videoname) {
-      const videoNameDtos = move.videoname.split(',').flatMap(v => v.split('\n')).map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) }; });
+      const videoNameDtos = move.videoname.map(v => v.trim()).filter(v => v).map(v => { return { name: v.split('!')[0], options: this.getOptions(v) }; });
       const courseNames = move.courseDates.map(c => c.course);
       const contents = this.courses.filter(c => courseNames.includes(c.name)).flatMap(c => c.contents);
 
@@ -112,6 +124,7 @@ export class DataManagerService {
   private setCourses(courses: CourseDto[]) {
     this.courses = courses.sort(generateSortFn([c => c.name]));
     this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
+    this.videoNames = Array.from(new Set(this.courses.flatMap(c => c.contents).map(c => c.name)));
     localStorage.setItem("courses", JSON.stringify(this.courses));
   }
 
@@ -133,6 +146,7 @@ export class DataManagerService {
     this.dances = JSON.parse(localStorage.getItem("dances") ?? "[]");
     this.moves = JSON.parse(localStorage.getItem("moves") ?? "[]");
     this.courses = JSON.parse(localStorage.getItem("courses") ?? "[]");
+    this.videoNames = Array.from(new Set(this.courses.flatMap(c => c.contents).map(c => c.name)));
     this.settingsService.initCourses(this.courses);
     this.movesSubject.next(this.moves);
     this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
@@ -188,11 +202,11 @@ export class DataManagerService {
   }
 
   getMovesNames(): Set<string> {
-    return new Set(this.movesSubject.value.map(move => move.name));
+    return this.movesNames;
   }
 
   getDanceNames(): Set<string> {
-    return new Set(this.movesSubject.value.map(move => move.dance));
+    return this.danceNames;
   }
 
   getDances(): Array<DanceDto> {
@@ -207,9 +221,18 @@ export class DataManagerService {
     return this.courses;
   }
 
-  getTypes(): Set<string> {
-    return new Set(this.movesSubject.value.map(move => move.type).sort());
+  getTypes(): Array<string> {
+    return this.types;
   }
+
+  getToDos(): Array<string> {
+    return this.toDos;
+  }
+
+  getVideoNames(): Array<string> {
+    return this.videoNames;
+  }
+
   private groupByDance = (xs: MoveDto[]): [string, MoveDto[]] => {
     return xs.reduce((rv: any, x: MoveDto) => {
       if (!rv[x.dance]) {
