@@ -250,7 +250,7 @@ export class ApiclientService {
       containedMoves: this.stringToArray(row[10]),
       relatedMoves: this.stringToArray(row[11]),
       relatedMovesOtherDances: this.stringToArray(row[12]),
-      videoname: row[13]?.split(',').flatMap((v: string) => v.split('\n')),
+      videoname: row[13]?.split(',').flatMap((v: string) => v.split('\n')).filter((v: string) => v),
       media: row[14],
       links: row[15],
       toDo: row[16],
