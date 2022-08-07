@@ -196,14 +196,22 @@ export class ApiclientService {
       return of(this.writeToken);
     }
     let token;
+    this.lastUpdated = this.nowInSec();
     if (token = this.settingsService.secretWrite) {
       token = this.createJwt();
+      console.log(token);
+      return this.http.post<ApiToken>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(tap(r => this.writeToken = r));
     } else if (this.settingsService.googleJwtString) {
-      token = this.settingsService.googleJwtString
+      token = this.settingsService.googleJwtString;
+      console.log(token);
+      this.writeToken = {
+        access_token: token,
+        expires_in: this.nowInSec() + 100,
+        token_type: ''
+      }
+      return of(this.writeToken);
     }
-    console.log(token);
-    this.lastUpdated = this.nowInSec();
-    return this.http.post<ApiToken>('https://oauth2.googleapis.com/token', { grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion: token }).pipe(tap(r => this.writeToken = r));
+    return of({} as ApiToken);
   }
 
   private nowInSec(): number {
