@@ -328,7 +328,7 @@ export class ApiclientService {
     return [moveDto.name, moveDto.dance, moveDto.description, moveDto.descriptionEng,
     String(moveDto.order), moveDto.count, String(moveDto.nameVerified),
     moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.containedMoves?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
-    moveDto.videoname.join(','), moveDto.media, moveDto.links, moveDto.toDo, moveDto.id]
+    moveDto.videoname?.join(','), moveDto.media, moveDto.links, moveDto.toDo, moveDto.id]
   }
 
   private courseDateToLine(courseDateDto: CourseDateDto): string[] {

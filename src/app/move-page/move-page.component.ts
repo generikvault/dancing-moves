@@ -133,6 +133,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
         this.moveForm.disable();
+        this.videonameControl.disable();
         this.readonly = true;
       }
     }));
@@ -204,6 +205,7 @@ export class MovePageComponent implements OnInit, OnDestroy {
     if (this.moveForm.valid && this.move) {
       this.loaded = false;
       this.moveForm.disable();
+      this.videonameControl.disable();
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
         this.moveForm.patchValue(m);
         const newName = m.name;
@@ -215,17 +217,20 @@ export class MovePageComponent implements OnInit, OnDestroy {
             this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
               this.loaded = true;
               this.moveForm.enable();
+              this.videonameControl.enable();
               this.navService.navigate(["move", m.id]);
             });
           } else {
             this.loaded = true;
             this.moveForm.enable();
+            this.videonameControl.enable();
             this.navService.navigate(["move", m.id]);
           }
 
         } else {
           this.loaded = true;
           this.moveForm.enable();
+          this.videonameControl.enable();
           if (this.idParam == "new") {
             this.navService.navigate(["move", m.id]);
           }
