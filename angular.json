@@ -62,7 +62,7 @@
               ],
               "outputHashing": "all",
               "sourceMap": {
-                "hidden": false,
+                "hidden": true,
                 "scripts": true,
                 "styles": true
               }

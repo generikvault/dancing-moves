@@ -36,6 +36,8 @@ test.describe('basic functions', () => {
 
   test('test dancing moves', async ({ page }) => {
     allure.story("Some Story");
+    allure.tag("Create Dance");
+    allure.epic("Dance");
     // Go to baseUrl/move/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape
     await page.goto(`/move/new`);
     // Click mat-nav-list[role="navigation"] >> text=Dances
@@ -81,4 +83,58 @@ test.describe('basic functions', () => {
     await page.locator('text=Name *BachataDance *OrderCountType * Name VerifiedStart MoveEnd MoveContainsRela').click();
   });
 
+  test('test', async ({ page }) => {
+    allure.story("other Story");
+    allure.tag("Create Dance");
+    allure.epic("Move");
+    // Go to http://localhost:4200/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape
+    await page.goto('http://localhost:4200/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+
+    // Click text=Dances
+    await page.locator('text=Dances').click();
+    await expect(page).toHaveURL('http://localhost:4200/dances?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+
+    // Click [aria-label="create new"]
+    await page.locator('[aria-label="create new"]').click();
+    await expect(page).toHaveURL('http://localhost:4200/dance/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+
+    // Click #mat-input-3
+    await page.locator('#mat-input-3').click();
+
+    // Fill #mat-input-3
+    await page.locator('#mat-input-3').fill('Bachata');
+
+    // Click #mat-input-4
+    await page.locator('#mat-input-4').click();
+
+    // Fill #mat-input-4
+    await page.locator('#mat-input-4').fill('Latin');
+
+    // Click button:has-text("Save")
+    await page.locator('button:has-text("Save")').click();
+    await expect(page).toHaveURL('http://localhost:4200/dance/Bachata?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+
+    // Click text=Dancing Moves
+    await page.locator('text=Dancing Moves').click();
+    await expect(page).toHaveURL('http://localhost:4200/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+
+    // Click [aria-label="create new"]
+    await page.locator('[aria-label="create new"]').click();
+    await expect(page).toHaveURL('http://localhost:4200/move/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+
+    // Click div:has-text("Name *") >> nth=2
+    await page.locator('div:has-text("Name *")').nth(2).click();
+
+    // Fill #mat-input-9
+    await page.locator('#mat-input-9').fill('Basico');
+
+    // Click div:has-text("Dance *") >> nth=2
+    await page.locator('div:has-text("Dance *")').nth(2).click();
+
+    // Click text=Bachata
+    await page.locator('text=Bachata').click();
+
+    // Click button:has-text("Save")
+    await page.locator('button:has-text("Save")').click();
+  });
 });
