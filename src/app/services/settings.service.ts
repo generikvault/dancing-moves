@@ -2,15 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import CryptoES from 'crypto-es';
-import { BehaviorSubject, firstValueFrom, forkJoin, Observable, Subject, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, forkJoin, Subject } from 'rxjs';
+import { ApiToken } from '../model/api-token';
 import { CourseDto } from '../model/course-dto';
-import { DataAccessDto } from '../model/data-access-dto';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
-import { SpecialRight } from '../model/special-right';
 import { UserMode } from '../model/user-mode';
-import { ApiclientService } from './apiclient.service';
-import { NavService } from './nav.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +24,9 @@ export class SettingsService {
   specialRightPasswords!: Array<string>;
   passwordPerCourse = new Map<string, string>();
   sheetNames = new Set<string>();
-  googleJwtString!: string;
+  userAccessToken!: ApiToken;
   sheetId!: string;
+  private client: any;
 
   constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
@@ -40,6 +38,7 @@ export class SettingsService {
 
   async loading() {
     if (!this.isStarted) {
+      this.initClient();
       await firstValueFrom(this.isStarting);
     }
   }
@@ -47,6 +46,7 @@ export class SettingsService {
   initSettings(params: Params) {
     this.secretReadString = this.getSetting(params, 'secret');
     this.secretWriteString = this.getSetting(params, 'secret-write');
+    this.userAccessToken = JSON.parse(localStorage.getItem('google-access') ?? '{}');
     this.sheetId = this.getSetting(params, 'sheetId');
 
     forkJoin({ read: this.getFile('secret-read.txt'), write: this.getFile('secret-write.txt') }).subscribe(data => {
@@ -55,7 +55,7 @@ export class SettingsService {
       if (this.secret && !this.sheetId) {
         this.sheetId = this.secret.movesSheetId;
       }
-      if (this.secret && this.secretWrite) {
+      if (this.secret && (this.secretWrite || this.userAccessToken?.access_token)) {
         this.userMode.next(UserMode.write)
       } else if (this.secret) {
         this.userMode.next(UserMode.read)
@@ -178,5 +178,31 @@ export class SettingsService {
     const mergedString = Array.from(new Set([...localEntries, ...queryEntries].filter(e => e))).join(',');
     localStorage.setItem(key, mergedString);
     return mergedString;
+  }
+
+
+  handleCredentialResponse = (response: ApiToken) => {
+    if (response.access_token) {
+      this.userAccessToken = response;
+      localStorage.setItem('google-access', JSON.stringify(this.userAccessToken));
+      this.userMode.next(UserMode.write);
+    }
+  }
+
+  initClient() {
+    // @ts-ignore
+    this.client = google.accounts.oauth2.initTokenClient({
+      client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
+      scope: "https://www.googleapis.com/auth/spreadsheets",
+      callback: this.handleCredentialResponse
+    });
+  }
+  loginGoogle() {
+    // @ts-ignore
+    this.client.requestAccessToken();
+  }
+  updateLoginGoogle() {
+    // @ts-ignore
+    this.client.requestAccessToken({ prompt: 'none' });
   }
 }

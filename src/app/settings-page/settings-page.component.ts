@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Params } from '@angular/router';
-import { UserMode } from '../model/user-mode';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -17,6 +16,7 @@ export class SettingsPageComponent implements OnInit {
     sheetId: new UntypedFormControl('')
   });
   url!: string;
+
   constructor(private settings: SettingsService, private navService: NavService) {
     this.navService.headlineObservable.next("Settings");
   }
@@ -53,23 +53,7 @@ export class SettingsPageComponent implements OnInit {
 
   }
 
-  handleCredentialResponse = (response: any) => {
-    if (response.access_token) {
-      this.settings.googleJwtString = response.access_token;
-      this.settings.userMode.next(UserMode.write)
-    }
-  }
-
-  // https://developers.google.com/identity/oauth2/web/guides/migration-to-gis#gis-only
-  // @ts-ignore
   loginGoogle() {
-    // @ts-ignore
-    const client = google.accounts.oauth2.initTokenClient({
-      client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
-      scope: "https://www.googleapis.com/auth/spreadsheets",
-      callback: this.handleCredentialResponse
-    });
-
-    client.requestAccessToken();
+    this.settings.loginGoogle();
   }
 }
