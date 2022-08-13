@@ -23,7 +23,6 @@ export class SettingsPageComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.settings.loading();
-    this.loginGoogle();
     this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
       const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights };
@@ -55,27 +54,22 @@ export class SettingsPageComponent implements OnInit {
   }
 
   handleCredentialResponse = (response: any) => {
-    console.log("Encoded JWT ID token: " + response.credential);
-    if (response.credential) {
-      this.settings.googleJwtString = response.credential;
+    if (response.access_token) {
+      this.settings.googleJwtString = response.access_token;
       this.settings.userMode.next(UserMode.write)
     }
   }
+
+  // https://developers.google.com/identity/oauth2/web/guides/migration-to-gis#gis-only
   // @ts-ignore
   loginGoogle() {
     // @ts-ignore
-    google.accounts.id.initialize({
+    const client = google.accounts.oauth2.initTokenClient({
       client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
       scope: "https://www.googleapis.com/auth/spreadsheets",
       callback: this.handleCredentialResponse
     });
-    // @ts-ignore
-    google.accounts.id.renderButton(
-      document.getElementById("google_button"),
-      { theme: "outline", size: "large" }  // customization attributes
-    );
-    // @ts-ignore
-    google.accounts.id.prompt(); // also display the One Tap dialog
 
+    client.requestAccessToken();
   }
 }
