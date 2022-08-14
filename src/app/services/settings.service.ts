@@ -191,7 +191,7 @@ export class SettingsService {
 
   initClient() {
     // @ts-ignore
-    this.client = google.accounts.oauth2.initTokenClient({
+    this.client = google?.accounts?.oauth2?.initTokenClient({
       client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
       scope: "https://www.googleapis.com/auth/spreadsheets",
       callback: this.handleCredentialResponse
@@ -199,10 +199,10 @@ export class SettingsService {
   }
   loginGoogle() {
     // @ts-ignore
-    this.client.requestAccessToken();
+    this.client?.requestAccessToken();
   }
   updateLoginGoogle() {
     // @ts-ignore
-    this.client.requestAccessToken({ prompt: 'none' });
+    this.client?.requestAccessToken({ prompt: 'none' });
   }
 }
