@@ -7,7 +7,7 @@
     "start": "ng serve",
     "build": "ng build --configuration production",
     "build:github": "ng build --configuration production --base-href https://mvolkert.github.io",
-    "android:build": "ng build --configuration android --base-href ./ && npx cordova build android",
+    "android:build": "ng build --configuration android --base-href ./",
     "android:debug": "npx cordova build android",
     "android:emulate": "npx cordova emulate android",
     "android:release": "npx cordova build android --release",

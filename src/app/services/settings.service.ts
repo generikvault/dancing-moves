@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import CryptoES from 'crypto-es';
 import { BehaviorSubject, firstValueFrom, forkJoin, Subject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { ApiToken } from '../model/api-token';
 import { CourseDto } from '../model/course-dto';
 import { SecretDto } from '../model/secret-dto';
@@ -191,21 +192,35 @@ export class SettingsService {
   initClient() {
     // @ts-ignore
     this.client = google.accounts.oauth2.initTokenClient({
-      client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
+      client_id: environment.clientId,
       scope: "https://www.googleapis.com/auth/spreadsheets",
       callback: this.handleCredentialResponse
     });
   }
-  loginGoogle() {
-    if (!this.client) {
-      this.initClient();
+
+  loginGoogle(prompt = '') {
+    if (environment.isAndroid) {
+      const params = {
+        'client_id': environment.clientId,
+        'response_type': 'token',
+        'scope': "https://www.googleapis.com/auth/spreadsheets",
+        'include_granted_scopes': 'true',
+        'redirect_uri': `io.github.mvolkert.dancingmoves%3A/oauth2redirect`,
+        'prompt': prompt
+      }
+      const options = {
+        params
+      }
+      this.http.get<ApiToken>('https://accounts.google.com/o/oauth2/v2/auth', options).subscribe(x => console.log(x));
+    } else {
+      if (!this.client) {
+        this.initClient();
+      }
+      this.client?.requestAccessToken();
     }
-    this.client?.requestAccessToken();
+
   }
   updateLoginGoogle() {
-    if (!this.client) {
-      this.initClient();
-    }
-    this.client?.requestAccessToken({ prompt: 'none' });
+    this.loginGoogle('none');
   }
 }
