@@ -39,7 +39,6 @@ export class SettingsService {
   async loading() {
     if (!this.isStarted) {
       await firstValueFrom(this.isStarting);
-      this.initClient();
     }
   }
 
@@ -191,18 +190,22 @@ export class SettingsService {
 
   initClient() {
     // @ts-ignore
-    this.client = google?.accounts?.oauth2?.initTokenClient({
+    this.client = google.accounts.oauth2.initTokenClient({
       client_id: "899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com",
       scope: "https://www.googleapis.com/auth/spreadsheets",
       callback: this.handleCredentialResponse
     });
   }
   loginGoogle() {
-    // @ts-ignore
+    if (!this.client) {
+      this.initClient();
+    }
     this.client?.requestAccessToken();
   }
   updateLoginGoogle() {
-    // @ts-ignore
+    if (!this.client) {
+      this.initClient();
+    }
     this.client?.requestAccessToken({ prompt: 'none' });
   }
 }
