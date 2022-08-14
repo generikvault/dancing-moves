@@ -38,8 +38,8 @@ export class SettingsService {
 
   async loading() {
     if (!this.isStarted) {
-      this.initClient();
       await firstValueFrom(this.isStarting);
+      this.initClient();
     }
   }
 
