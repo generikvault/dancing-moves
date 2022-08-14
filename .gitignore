@@ -49,3 +49,10 @@ Thumbs.db
 /playwright/.cache/
 /results/**
 /allure**
+/plugins/
+/platforms/
+
+www
+dancingmoves.keystore
+.idea
+build.json
