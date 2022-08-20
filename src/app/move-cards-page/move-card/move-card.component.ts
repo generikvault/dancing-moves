@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { AnchorService } from 'src/app/app-routing-module/anchor.service';
 import { CourseDateDto } from 'src/app/model/course-date-dto';
 import { MoveDto } from 'src/app/model/move-dto';
 import { DataManagerService } from 'src/app/services/data-manager.service';
@@ -15,14 +16,21 @@ export class MoveCardComponent implements OnInit {
   nameUri = "";
   description!: string;
 
-  constructor(private navService: NavService, private dataManager: DataManagerService) { }
+  @ViewChild('renderedContent') renderedContent!: ElementRef<HTMLInputElement>;
+
+  onClick = (event: Event) => {
+    this.navService.fragment = this.nameUri;
+    this.anchorService.interceptClick(event);
+  }
+
+  constructor(private navService: NavService, private dataManager: DataManagerService, private anchorService: AnchorService) { }
 
   ngOnInit(): void {
     this.nameUri = this.moveDto.name.replace(/[^\w]/g, '');
   }
 
   openDetails(): Promise<boolean> {
-    this.navService.fragment = this.moveDto.name.replace(/[^\w]/g, '');
+    this.navService.fragment = this.nameUri;
     return this.navService.navigate(["move", encodeURI(this.moveDto.id)]);
   }
 
@@ -33,6 +41,7 @@ export class MoveCardComponent implements OnInit {
   initDescription() {
     if (!this.description) {
       this.description = this.dataManager.enrichDescription(this.moveDto);
+      this.renderedContent.nativeElement.addEventListener('click', this.onClick);
     }
   }
 }

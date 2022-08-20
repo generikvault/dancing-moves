@@ -133,8 +133,11 @@
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="moveForm.invalid || moveForm.disabled" (click)="onSave()">Save</button>
 </form>
-<div class="description" markdown [data]="description">
+<div #renderedContent>
+    <div class="description" markdown [data]="description">
+    </div>
 </div>
+
 <ng-container *ngFor="let video of move?.videos">
     <div class="video-container">
         <iframe scrolling="no" frameborder="0" [src]="video.safeUrl" allowfullscreen></iframe>

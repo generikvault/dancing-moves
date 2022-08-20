@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -14,13 +14,14 @@ import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 import { easterEggMoves } from '../util/data';
 import { deepCopy, nameExistsValidator } from '../util/util';
+import { AnchorService } from '../app-routing-module/anchor.service';
 
 @Component({
   selector: 'app-move-page',
   templateUrl: './move-page.component.html',
   styleUrls: ['./move-page.component.css']
 })
-export class MovePageComponent implements OnInit, OnDestroy {
+export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
   separatorKeysCodes: number[] = [ENTER, COMMA];
   move: MoveDto | undefined;
   dances = new Array<string>();
@@ -41,13 +42,18 @@ export class MovePageComponent implements OnInit, OnDestroy {
   description: string = "";
 
   @ViewChild('videonameInput') videonameInput!: ElementRef<HTMLInputElement>;
+  @ViewChild('renderedContent') renderedContent!: ElementRef<HTMLInputElement>;
   videonameControl = new UntypedFormControl("");
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
-    private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer) {
+    private settings: SettingsService, private navService: NavService, private sanitizer: DomSanitizer,
+    private anchorService: AnchorService) {
     this.subscriptionsGlobal.push(this.route.paramMap.subscribe(params => {
       this.readParams(params);
     }));
+  }
+  ngAfterViewInit(): void {
+    this.renderedContent.nativeElement.addEventListener('click', event => this.anchorService.interceptClick(event));
   }
 
   async ngOnInit(): Promise<void> {
