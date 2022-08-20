@@ -206,15 +206,15 @@ export class SettingsService {
         {
           'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
           'webClientId': environment.clientId,
-          'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+          'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
         })
         .then(res => {
           console.log(res);
-          this.snackBar.open(`res: ${JSON.stringify(res)}`);
+          this.snackBar.open(`res: ${JSON.stringify(res)}`, 'OK');
           this.handleCredentialResponse(res);
         })
         .catch(err => {
-          this.snackBar.open(`error: ${JSON.stringify(err)}`);
+          this.snackBar.open(`error: ${JSON.stringify(err)}`, 'OK');
           console.error(err)
         });
     } else {
@@ -232,15 +232,15 @@ export class SettingsService {
         {
           'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
           'webClientId': environment.clientId,
-          'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+          'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
         },
         (res: any) => {
           console.log(res);
-          this.snackBar.open(`res2: ${JSON.stringify(res)}`);
+          this.snackBar.open(`res2: ${JSON.stringify(res)}`, 'OK');
           this.handleCredentialResponse(res);
         },
         (err: any) => {
-          this.snackBar.open(`error2: ${JSON.stringify(err)}`);
+          this.snackBar.open(`error2: ${JSON.stringify(err)}`, 'OK');
           console.error(err)
         }
       );

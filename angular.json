@@ -89,11 +89,31 @@
                 }
               ],
               "outputHashing": "all",
-              "sourceMap": {
-                "hidden": true,
-                "scripts": true,
-                "styles": true
-              }
+              "sourceMap": false
+            },
+            "android-prod": {
+              "outputPath": "www",
+              "index": "src/environments/index.html",
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "2kb",
+                  "maximumError": "4kb"
+                }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.android.prod.ts"
+                }
+              ],
+              "outputHashing": "all",
+              "sourceMap": false
             },
             "development": {
               "buildOptimizer": false,
