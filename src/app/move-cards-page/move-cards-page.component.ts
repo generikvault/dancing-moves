@@ -9,7 +9,7 @@ import { deepCopy, delay, generateSortFn } from '../util/util';
   templateUrl: './move-cards-page.component.html',
   styleUrls: ['./move-cards-page.component.css']
 })
-export class MoveCardsPageComponent implements OnInit, AfterViewInit {
+export class MoveCardsPageComponent implements OnInit {
 
   moves: MoveDto[] = [];
   allMoves: MoveDto[] = [];
@@ -17,10 +17,6 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit {
 
   constructor(private dataManagerService: DataManagerService, private navService: NavService) {
     this.navService.headlineObservable.next("Dancing Moves");
-  }
-
-  ngAfterViewInit(): void {
-    this.scrollTo(this.navService.fragment);
   }
 
   async ngOnInit(): Promise<void> {
@@ -35,6 +31,7 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit {
   private start() {
     this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.moves = deepCopy(moves).sort(generateSortFn([m => m.dance, m => m.order, m => m.name]));
+      this.scrollTo(this.navService.fragment);
       this.allMoves = deepCopy(this.moves);
     });
     this.dataManagerService.searchFilterObservable.subscribe(
@@ -43,12 +40,14 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit {
         this.moves.sort(generateSortFn(value.sort.map(key => this.sortKeyToFunction(key, value))));
       });
   }
-  scrollTo(id?: string): void {
+  async scrollTo(id?: string): Promise<void> {
     if (id) {
+      await delay(100);
       const elementList = document.querySelectorAll('#' + id);
       console.log(elementList);
       const element = elementList[0] as HTMLElement;
       element?.scrollIntoView({ block: "start", behavior: 'auto' });
+      this.navService.fragment = "";
     }
   }
 
