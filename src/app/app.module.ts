@@ -37,6 +37,7 @@ import { SettingsPageComponent } from './settings-page/settings-page.component';
 import { CourseCardsPageComponent } from './course-cards-page/course-cards-page.component';
 import { CoursePageComponent } from './course-page/course-page.component';
 import { DancePageComponent } from './dance-page/dance-page.component';
+import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
 @NgModule({
   declarations: [
     AppComponent,
@@ -78,9 +79,9 @@ import { DancePageComponent } from './dance-page/dance-page.component';
     MatSnackBarModule,
     MatExpansionModule,
     MatChipsModule,
-    MarkdownModule.forRoot()
+    MarkdownModule.forRoot(),
   ],
-  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' }],
+  providers: [{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' }, GooglePlus],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

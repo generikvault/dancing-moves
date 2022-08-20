@@ -69,6 +69,7 @@
             },
             "android": {
               "outputPath": "www",
+              "index": "src/environments/index.html",
               "budgets": [
                 {
                   "type": "initial",

@@ -9,6 +9,8 @@ import { CourseDto } from '../model/course-dto';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
+import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,7 @@ export class SettingsService {
   sheetId!: string;
   private client: any;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient, private googlePlus: GooglePlus, private snackBar: MatSnackBar) { }
 
   fetchSettings() {
     this.route.queryParams.subscribe(params => {
@@ -200,18 +202,48 @@ export class SettingsService {
 
   loginGoogle(prompt = '') {
     if (environment.isAndroid) {
-      const params = {
-        'client_id': environment.clientId,
-        'response_type': 'token',
-        'scope': "https://www.googleapis.com/auth/spreadsheets",
-        'include_granted_scopes': 'true',
-        'redirect_uri': `io.github.mvolkert.dancingmoves%3A/oauth2redirect`,
-        'prompt': prompt
+      this.googlePlus.login(
+        {
+          'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+          'webClientId': environment.clientId,
+          'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+        })
+        .then(res => {
+          console.log(res);
+          this.snackBar.open(`res: ${JSON.stringify(res)}`);
+          this.handleCredentialResponse(res);
+        })
+        .catch(err => {
+          this.snackBar.open(`error: ${JSON.stringify(err)}`);
+          console.error(err)
+        });
+    } else {
+      if (!this.client) {
+        this.initClient();
       }
-      const options = {
-        params
-      }
-      this.http.get<ApiToken>('https://accounts.google.com/o/oauth2/v2/auth', options).subscribe(x => console.log(x));
+      this.client?.requestAccessToken();
+    }
+
+  }
+
+  loginGoogle2(prompt = '') {
+    if (environment.isAndroid) {
+      (window as any).plugins.googleplus.login(
+        {
+          'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
+          'webClientId': environment.clientId,
+          'offline': true // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
+        },
+        (res: any) => {
+          console.log(res);
+          this.snackBar.open(`res2: ${JSON.stringify(res)}`);
+          this.handleCredentialResponse(res);
+        },
+        (err: any) => {
+          this.snackBar.open(`error2: ${JSON.stringify(err)}`);
+          console.error(err)
+        }
+      );
     } else {
       if (!this.client) {
         this.initClient();

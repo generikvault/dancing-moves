@@ -56,4 +56,8 @@ export class SettingsPageComponent implements OnInit {
   loginGoogle() {
     this.settings.loginGoogle();
   }
+
+  loginGoogle2() {
+    this.settings.loginGoogle2();
+  }
 }
