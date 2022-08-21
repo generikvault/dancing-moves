@@ -80,12 +80,15 @@ export class DataManagerService {
     if (!date || isNaN(date.getTime())) {
       date = new Date("2022-03-04");
     }
-    if (this.moves.length == 0 || this.dances.length == 0 || this.courses.length == 0) {
-      this.snackBar.open(`no local data`, 'OK');
+    if (this.settingsService.isDeveloper) {
+      if (this.moves.length == 0 || this.dances.length == 0 || this.courses.length == 0) {
+        this.snackBar.open(`no local data`, 'OK');
+      }
+      if (olderThanADay(date)) {
+        this.snackBar.open(`to old date`, 'OK');
+      }
     }
-    if (olderThanADay(date)) {
-      this.snackBar.open(`to old date`, 'OK');
-    }
+
     if (this.moves.length == 0 || this.dances.length == 0 || this.courses.length == 0 || olderThanADay(date)) {
       this.api_get();
     }

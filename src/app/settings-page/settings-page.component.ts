@@ -13,7 +13,8 @@ export class SettingsPageComponent implements OnInit {
     secretRead: new UntypedFormControl(''),
     secretWrite: new UntypedFormControl(''),
     specialRights: new UntypedFormControl(''),
-    sheetId: new UntypedFormControl('')
+    sheetId: new UntypedFormControl(''),
+    isDeveloper: new UntypedFormControl(false)
   });
   url!: string;
 
@@ -32,6 +33,7 @@ export class SettingsPageComponent implements OnInit {
       localStorage.setItem('secret-write', value.secretWrite);
       localStorage.setItem('special-rights', value.specialRights);
       localStorage.setItem('sheetId', value.sheetId);
+      this.settings.isDeveloper = value.isDeveloper;
     });
     this.settingsForm.patchValue({
       secretRead: this.settings.secretReadString,

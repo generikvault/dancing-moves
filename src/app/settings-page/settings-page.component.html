@@ -20,6 +20,9 @@
         <input readonly matInput [value]="url">
     </mat-form-field>
     <button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
+    <mat-slide-toggle formControlName="isDeveloper">
+        Developer
+    </mat-slide-toggle>
 </form>
 <mat-divider></mat-divider>
 <a mat-raised-button href="https://github.com/mvolkert/dancing-moves"><img

@@ -9,8 +9,8 @@ import { CourseDto } from '../model/course-dto';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
-import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +30,7 @@ export class SettingsService {
   userAccessToken!: ApiToken;
   sheetId!: string;
   private client: any;
+  isDeveloper: boolean = false;
 
   constructor(private route: ActivatedRoute, private http: HttpClient, private googlePlus: GooglePlus, private snackBar: MatSnackBar) { }
 
@@ -208,14 +209,18 @@ export class SettingsService {
           'webClientId': environment.clientId,
           'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
         })
-        .then(res => {
-          console.log(res);
-          this.snackBar.open(`res: ${JSON.stringify(res)}`, 'OK');
+        .then((res: any) => {
+          if (this.isDeveloper) {
+            console.log(res);
+            this.snackBar.open(`res2: ${JSON.stringify(res)}`, 'OK');
+          }
           this.handleCredentialResponse(res);
         })
-        .catch(err => {
-          this.snackBar.open(`error: ${JSON.stringify(err)}`, 'OK');
-          console.error(err)
+        .catch((err: any) => {
+          if (this.isDeveloper) {
+            this.snackBar.open(`error2: ${JSON.stringify(err)}`, 'OK');
+            console.error(err)
+          }
         });
     } else {
       if (!this.client) {
@@ -235,13 +240,17 @@ export class SettingsService {
           'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
         },
         (res: any) => {
-          console.log(res);
-          this.snackBar.open(`res2: ${JSON.stringify(res)}`, 'OK');
+          if (this.isDeveloper) {
+            console.log(res);
+            this.snackBar.open(`res2: ${JSON.stringify(res)}`, 'OK');
+          }
           this.handleCredentialResponse(res);
         },
         (err: any) => {
-          this.snackBar.open(`error2: ${JSON.stringify(err)}`, 'OK');
-          console.error(err)
+          if (this.isDeveloper) {
+            this.snackBar.open(`error2: ${JSON.stringify(err)}`, 'OK');
+            console.error(err)
+          }
         }
       );
     } else {
