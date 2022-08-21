@@ -72,7 +72,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.moveForm = this.create_form();
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
-    this.otherMovesNames.add("new");
+    this.otherMovesNames = new Set<string>(["new"]);;
 
     if (this.idParam == "new") {
       if (this.move) {
@@ -232,7 +232,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
             this.videonameControl.enable();
             this.navService.navigate(["move", m.id]);
           }
-
+          this.navService.headlineObservable.next(m.name);
         } else {
           this.loaded = true;
           this.moveForm.enable();

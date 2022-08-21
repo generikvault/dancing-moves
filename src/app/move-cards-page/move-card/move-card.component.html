@@ -12,7 +12,9 @@
           Description
         </mat-panel-title>
       </mat-expansion-panel-header>
-      <div *ngIf="description" class="description" markdown [data]="description">
+      <div #renderedContent>
+        <div *ngIf="description" class="description" markdown [data]="description">
+        </div>
       </div>
     </mat-expansion-panel>
   </mat-card-content>

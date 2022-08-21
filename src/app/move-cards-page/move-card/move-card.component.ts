@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AnchorService } from 'src/app/app-routing-module/anchor.service';
 import { CourseDateDto } from 'src/app/model/course-date-dto';
 import { MoveDto } from 'src/app/model/move-dto';
@@ -10,7 +10,7 @@ import { NavService } from 'src/app/services/nav.service';
   templateUrl: './move-card.component.html',
   styleUrls: ['./move-card.component.css']
 })
-export class MoveCardComponent implements OnInit {
+export class MoveCardComponent implements OnInit, OnDestroy {
 
   @Input("move-dto") moveDto!: MoveDto
   nameUri = "";
@@ -43,5 +43,9 @@ export class MoveCardComponent implements OnInit {
       this.description = this.dataManager.enrichDescription(this.moveDto);
       this.renderedContent.nativeElement.addEventListener('click', this.onClick);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.renderedContent.nativeElement?.removeEventListener('click', this.onClick);
   }
 }
