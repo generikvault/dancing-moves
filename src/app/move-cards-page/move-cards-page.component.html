@@ -7,6 +7,8 @@
         </div>
     </mat-card-content>
 </mat-card>
-<ng-container *ngFor="let move of moves">
-    <app-move-card [move-dto]=move></app-move-card>
-</ng-container>
+<div #moveList>
+    <ng-container *ngFor="let move of moves">
+        <app-move-card [move-dto]=move></app-move-card>
+    </ng-container>
+</div>

@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MoveDto } from '../model/move-dto';
 import { SearchDto } from '../model/search-dto';
@@ -16,6 +16,8 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit, OnDestroy 
   allMoves: MoveDto[] = [];
   loaded = false;
   subscriptions = new Array<Subscription>();
+
+  @ViewChild('moveList') moveListElement!: ElementRef<HTMLInputElement>;
 
   constructor(private dataManagerService: DataManagerService, private navService: NavService) {
     this.navService.headlineObservable.next("Dancing Moves");
@@ -53,11 +55,12 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit, OnDestroy 
   async scrollTo(id?: string): Promise<void> {
     if (id) {
       await delay(10);
-      const elementList = document.querySelectorAll('#' + id);
-      console.log(elementList);
-      const element = elementList[0] as HTMLElement;
-      element?.scrollIntoView({ block: "start", behavior: 'auto' });
-      this.navService.fragment = "";
+      const elementList = this.moveListElement?.nativeElement?.querySelectorAll('#' + id);
+      if (elementList.length === 1) {
+        const element = elementList[0] as HTMLElement;
+        element?.scrollIntoView({ block: "start", behavior: 'auto' });
+        this.navService.fragment = "";
+      }
     }
   }
 
