@@ -2,6 +2,7 @@ import { LocationStrategy } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { NavService } from '../services/nav.service';
+import { SettingsService } from '../services/settings.service';
 
 /**
  * Service to handle links generated through markdown parsing.
@@ -20,7 +21,7 @@ import { NavService } from '../services/nav.service';
 export class AnchorService {
 
     constructor(
-        private router: NavService,
+        private router: NavService, private settings: SettingsService
     ) { }
 
     /**
@@ -29,17 +30,15 @@ export class AnchorService {
      * @param event The event to evaluated for link click.
      */
     interceptClick(event: Event) {
-        console.log(event);
+        this.settings.log('click event:', event);
         const element = event.target;
         if (!(element instanceof HTMLAnchorElement)) {
             return;
         }
         const href = element.getAttribute('href') ?? '';
-        console.log(href);
         if (this.isExternalUrl(href) || this.isRouterLink(element)) {
             return;
         }
-        console.log('navigate', href);
         this.navigate(href);
         event.preventDefault();
     }
@@ -49,6 +48,7 @@ export class AnchorService {
      * @param url Destination path to navigate to.
      */
     navigate(url: string) {
+        this.settings.log('navigate:', url);
         this.router.navigate([url]);
     }
 
