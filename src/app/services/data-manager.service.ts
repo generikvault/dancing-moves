@@ -108,7 +108,7 @@ export class DataManagerService {
         this.settingsService.initCourses(results.courses);
         this.setCourses(results.courses);
         for (const move of results.moves) {
-          move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id);
+          move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id).sort(generateSortFn([c => c.date]));
         }
         this.setMoves(results.moves);
       }

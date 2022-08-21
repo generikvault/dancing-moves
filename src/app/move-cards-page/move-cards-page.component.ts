@@ -64,9 +64,9 @@ export class MoveCardsPageComponent implements OnInit, AfterViewInit, OnDestroy 
   sortKeyToFunction(key: string, searchDto: SearchDto): (m: MoveDto) => any {
     if (key === "courseDate") {
       if (!searchDto.courses || searchDto.courses.length === 0) {
-        return m => m.courseDates.map(c => c.date).pop();
+        return m => m.courseDates.map(c => c.date)[0];
       }
-      return m => m.courseDates.filter(c => searchDto.courses.includes(c.course)).map(c => c.date).pop();
+      return m => m.courseDates.filter(c => searchDto.courses.includes(c.course)).map(c => c.date)[0];
     }
     return m => eval("m." + key);
   }
