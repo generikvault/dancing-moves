@@ -40,6 +40,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
   subscriptionsGlobal = new Array<Subscription>();
   subscriptions = new Array<Subscription>();
   description: string = "";
+  locations = new Set<string>();
 
   @ViewChild('videonameInput') videonameInput!: ElementRef<HTMLInputElement>;
   @ViewChild('renderedContent') renderedContent!: ElementRef<HTMLInputElement>;
@@ -72,7 +73,8 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.moveForm = this.create_form();
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
-    this.otherMovesNames = new Set<string>(["new"]);;
+    this.otherMovesNames = new Set<string>(["new"]);
+    this.locations = new Set<string>(["local"]);
 
     if (this.idParam == "new") {
       if (this.move) {
@@ -121,6 +123,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       this.move.links = value.links;
       this.move.toDo = value.toDo;
       this.move.courseDates = value.courseDates;
+      this.move.location = value.location;
       this.danceMoves = this.dataManager.getMovesOf(this.move?.dance);
       this.description = this.dataManager.enrichDescription(this.move);
       this.types = this.dataManager.getTypes().filter(x => x.includes(value.type));
@@ -137,10 +140,12 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       this.moveForm.patchValue(this.move);
     }
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
-      if (userMode === UserMode.read) {
+      if (userMode === UserMode.read && this.move?.location && this.move?.location != 'local') {
         this.moveForm.disable();
         this.videonameControl.disable();
         this.readonly = true;
+      } else if (this.settings.sheetId) {
+        this.locations.add(this.settings.sheetId);
       }
     }));
     this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
@@ -164,6 +169,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       description: new UntypedFormControl(''),
       toDo: new UntypedFormControl(''),
       links: new UntypedFormControl(''),
+      location: new UntypedFormControl(''),
       row: new UntypedFormControl(''),
       courseDates: new UntypedFormArray([])
     });

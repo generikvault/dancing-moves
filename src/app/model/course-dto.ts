@@ -14,5 +14,6 @@ export interface CourseDto {
     hash: string,
     salt: string,
     contents: VideoDto[],
+    location: string,
     row: number
 }

@@ -21,6 +21,7 @@ export interface MoveDto {
     id: string,
     links: string,
     row: number,
+    location: string,
     courseDates: CourseDateDto[]
     videos: VideoDto[]
 }

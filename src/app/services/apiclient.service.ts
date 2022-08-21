@@ -238,6 +238,7 @@ export class ApiclientService {
       course: row[1],
       moveId: row[2],
       description: row[3],
+      location: this.settingsService.sheetId,
       row: i + 1
     };
   }
@@ -265,6 +266,7 @@ export class ApiclientService {
       id: row[17],
       row: i + 1,
       courseDates: [],
+      location: this.settingsService.sheetId,
       videos: []
     };
   }
@@ -284,6 +286,7 @@ export class ApiclientService {
       hash: row[10],
       salt: row[11],
       contents: [],
+      location: this.settingsService.sheetId,
       row: i + 1
     };
   }
@@ -296,6 +299,7 @@ export class ApiclientService {
       rhythm: row[3],
       description: row[4],
       links: row[5],
+      location: this.settingsService.sheetId,
       row: i + 1
     };
   }
@@ -307,6 +311,7 @@ export class ApiclientService {
       linkEncripted: row[1],
       courseName: row[2],
       changed: false,
+      location: this.settingsService.sheetId,
       row: i + 1
     };
   }

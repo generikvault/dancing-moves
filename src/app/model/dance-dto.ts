@@ -5,5 +5,6 @@ export interface DanceDto {
     rhythm: string,
     description: string,
     links: string,
+    location: string,
     row: number
 }

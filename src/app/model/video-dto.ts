@@ -7,5 +7,6 @@ export interface VideoDto {
     courseName: string,
     safeUrl?: SafeResourceUrl,
     changed: boolean,
+    location: string,
     row: number
 }
