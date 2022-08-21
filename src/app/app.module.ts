@@ -20,6 +20,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MarkdownModule } from 'ngx-markdown';
@@ -79,6 +80,7 @@ import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
     MatSnackBarModule,
     MatExpansionModule,
     MatChipsModule,
+    MatSlideToggleModule,
     MarkdownModule.forRoot(),
   ],
   providers: [{ provide: MAT_DATE_LOCALE, useValue: 'de-DE' }, GooglePlus],

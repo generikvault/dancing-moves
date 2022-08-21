@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -19,6 +20,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   });
   url!: string;
   subscriptions = new Array<Subscription>();
+  isAndriod = environment.isAndroid;
 
 
   constructor(private settings: SettingsService, private navService: NavService) {
