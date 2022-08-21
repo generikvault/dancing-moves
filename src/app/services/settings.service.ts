@@ -210,18 +210,10 @@ export class SettingsService {
           'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
         })
         .then((res: any) => {
-          if (this.isDeveloper) {
-            console.log(res);
-            this.snackBar.open(`res2: ${JSON.stringify(res)}`, 'OK');
-          }
+          this.log('res1', res);
           this.handleCredentialResponse(res);
         })
-        .catch((err: any) => {
-          if (this.isDeveloper) {
-            this.snackBar.open(`error2: ${JSON.stringify(err)}`, 'OK');
-            console.error(err)
-          }
-        });
+        .catch((err: any) => this.log('error2', err));
     } else {
       if (!this.client) {
         this.initClient();
@@ -240,19 +232,10 @@ export class SettingsService {
           'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
         },
         (res: any) => {
-          if (this.isDeveloper) {
-            console.log(res);
-            this.snackBar.open(`res2: ${JSON.stringify(res)}`, 'OK');
-          }
+          this.log('res2', res);
           this.handleCredentialResponse(res);
         },
-        (err: any) => {
-          if (this.isDeveloper) {
-            this.snackBar.open(`error2: ${JSON.stringify(err)}`, 'OK');
-            console.error(err)
-          }
-        }
-      );
+        (err: any) => this.log('error2', err));
     } else {
       if (!this.client) {
         this.initClient();
@@ -263,5 +246,12 @@ export class SettingsService {
   }
   updateLoginGoogle() {
     this.loginGoogle('none');
+  }
+
+  log(msg: string, content: any) {
+    if (this.isDeveloper) {
+      this.snackBar.open(`${msg}: ${JSON.stringify(content)}`, 'OK');
+      console.log(msg, content)
+    }
   }
 }

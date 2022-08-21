@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Params } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -8,7 +9,7 @@ import { SettingsService } from '../services/settings.service';
   templateUrl: './settings-page.component.html',
   styleUrls: ['./settings-page.component.css']
 })
-export class SettingsPageComponent implements OnInit {
+export class SettingsPageComponent implements OnInit, OnDestroy {
   settingsForm = new UntypedFormGroup({
     secretRead: new UntypedFormControl(''),
     secretWrite: new UntypedFormControl(''),
@@ -17,14 +18,17 @@ export class SettingsPageComponent implements OnInit {
     isDeveloper: new UntypedFormControl(false)
   });
   url!: string;
+  subscriptions = new Array<Subscription>();
+
 
   constructor(private settings: SettingsService, private navService: NavService) {
     this.navService.headlineObservable.next("Settings");
   }
 
+
   async ngOnInit(): Promise<void> {
     await this.settings.loading();
-    this.settingsForm.valueChanges.subscribe(value => {
+    this.subscriptions.push(this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
       const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights };
       this.navService.navigate([], queryJson);
@@ -34,7 +38,7 @@ export class SettingsPageComponent implements OnInit {
       localStorage.setItem('special-rights', value.specialRights);
       localStorage.setItem('sheetId', value.sheetId);
       this.settings.isDeveloper = value.isDeveloper;
-    });
+    }));
     this.settingsForm.patchValue({
       secretRead: this.settings.secretReadString,
       secretWrite: this.settings.secretWriteString,
@@ -61,5 +65,9 @@ export class SettingsPageComponent implements OnInit {
 
   loginGoogle2() {
     this.settings.loginGoogle2();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }

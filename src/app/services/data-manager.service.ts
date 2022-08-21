@@ -82,10 +82,10 @@ export class DataManagerService {
     }
     if (this.settingsService.isDeveloper) {
       if (this.moves.length == 0 || this.dances.length == 0 || this.courses.length == 0) {
-        this.snackBar.open(`no local data`, 'OK');
+        this.settingsService.log(`no local data`, date);
       }
       if (olderThanADay(date)) {
-        this.snackBar.open(`to old date`, 'OK');
+        this.settingsService.log(`to old date`, date);
       }
     }
 

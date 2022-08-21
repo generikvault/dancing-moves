@@ -248,6 +248,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.subscriptionsGlobal.forEach(s => s.unsubscribe());
+    this.settings.log('move.page', 'ngOnDestroy');
   }
 
   add(event: MatChipInputEvent): void {
