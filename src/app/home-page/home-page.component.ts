@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { delay, firstValueFrom, interval } from 'rxjs';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 
@@ -13,6 +14,20 @@ export class HomePageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  async takeTour() {
+    await this.navService.navigate(['dances']);
+    await firstValueFrom(interval(1000))
+    await this.navService.navigate(['courses']);
+    await firstValueFrom(interval(1000))
+    await this.navService.navigate(['moves']);
+    await firstValueFrom(interval(1000))
+    await this.navService.navigate(['relations']);
+    await firstValueFrom(interval(1000))
+    await this.navService.navigate(['settings']);
+    await firstValueFrom(interval(1000))
+    await this.navService.navigate(['moves']);
   }
 
 }
