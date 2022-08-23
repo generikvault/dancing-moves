@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,9 @@ export class NavService {
   constructor(private router: Router) { }
 
   navigate(route: string[] = [], queryParams: Params | undefined = undefined, fragment?: string): Promise<boolean> {
+    if (route.length == 0 && environment.isAndroid) {
+      return Promise.resolve(true);
+    }
     if (queryParams) {
       return this.router.navigate(route, { queryParams: queryParams, queryParamsHandling: 'merge', fragment: fragment });
     }

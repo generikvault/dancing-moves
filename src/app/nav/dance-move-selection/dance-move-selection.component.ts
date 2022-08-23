@@ -1,8 +1,8 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipInputEvent } from '@angular/material/chips';
-import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, Subscription, tap } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
 import { SearchDto } from 'src/app/model/search-dto';
@@ -16,7 +16,7 @@ import { SettingsService } from 'src/app/services/settings.service';
   templateUrl: './dance-move-selection.component.html',
   styleUrls: ['./dance-move-selection.component.css']
 })
-export class DanceMoveSelectionComponent implements OnInit {
+export class DanceMoveSelectionComponent implements OnInit, OnDestroy {
 
   dances = new Set<string>();
   courseNames = new Set<string>();
@@ -46,22 +46,25 @@ export class DanceMoveSelectionComponent implements OnInit {
     sort: new UntypedFormControl([])
   });
   sortControl = new UntypedFormControl("");
+  subscriptions = new Array<Subscription>();
+  initialSort = new Array<string>("dance", "courseDate", "order", "name");
 
   constructor(private dataManagerService: DataManagerService, private navService: NavService, private settingsService: SettingsService) {
   }
 
+
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
 
-    this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
+    this.subscriptions.push(this.dataManagerService.movesObservable.subscribe((moves: MoveDto[]) => {
       this.dances = this.dataManagerService.getDanceNames();
       this.courseNames = this.dataManagerService.getCourseNames();
       this.types = this.dataManagerService.getTypes();
       if (moves?.length > 0) {
         this.loading = false;
       }
-    });
-    this.dataManagerService.getGroupedMoveNames().subscribe(groupedMoveNames => {
+    }));
+    this.subscriptions.push(this.dataManagerService.getGroupedMoveNames().subscribe(groupedMoveNames => {
       this.movesGroup = groupedMoveNames;
       this.movesGroupOptions = this.dataManagerService.searchFilterObservable.pipe(
         map((value: SearchDto) => this.filterGroup(value)),
@@ -69,20 +72,26 @@ export class DanceMoveSelectionComponent implements OnInit {
       this.movesGroupOptions2 = this.dataManagerService.searchFilterObservable.pipe(
         map((value: SearchDto) => this.filterGroup(value, v => v.related)),
       );
-    });
+    }));
     this.codeSnippets = this.dataManagerService.searchFilterObservable.pipe(map(this.filterCodeSnippets));
-    this.dataManagerService.searchFilterObservable.subscribe(searchFilter => {
+    this.subscriptions.push(this.dataManagerService.searchFilterObservable.subscribe(searchFilter => {
+      if (!searchFilter.sort?.length) {
+        searchFilter.sort = JSON.parse(JSON.stringify(this.initialSort));
+      }
       if (JSON.stringify(searchFilter) !== JSON.stringify(this.searchForm.value)) {
         this.searchForm.patchValue(searchFilter);
       }
-      // map empty to undefined for clean url paths
-      const params = Object.entries(searchFilter).reduce((a: any, x) => { a[x[0]] = (x[1]?.length > 0) ? x[1] : undefined; return a }, {});
-      this.navService.navigate([], params);
       this.handleEasterEggs(searchFilter);
-    });
-    this.searchForm!.valueChanges.subscribe((value: SearchDto) => {
+    }));
+    this.subscriptions.push(this.searchForm!.valueChanges.subscribe((value: SearchDto) => {
+      // map empty to undefined for clean url paths
+      if (JSON.stringify(this.initialSort) === JSON.stringify(value.sort)) {
+        value.sort = [];
+      }
+      const params = Object.entries(value).reduce((a: any, x) => { a[x[0]] = (x[1]?.length > 0) ? x[1] : undefined; return a }, {});
+      this.navService.navigate([], params);
       this.dataManagerService.searchFilterObservable.next(value);
-    });
+    }));
   }
 
   private filterGroup(search: SearchDto, moveGetter = (search: SearchDto) => search.move): MoveGroupDto[] {
@@ -138,5 +147,9 @@ export class DanceMoveSelectionComponent implements OnInit {
     this.searchForm.get("sort")?.setValue(sortKeys);
     this.sortInput.nativeElement.value = '';
     this.sortControl.setValue(null);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
   }
 }

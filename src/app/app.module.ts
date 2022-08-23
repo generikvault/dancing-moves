@@ -39,6 +39,7 @@ import { CourseCardsPageComponent } from './course-cards-page/course-cards-page.
 import { CoursePageComponent } from './course-page/course-page.component';
 import { DancePageComponent } from './dance-page/dance-page.component';
 import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
+import { HomePageComponent } from './home-page/home-page.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +54,8 @@ import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
     DanceMoveSelectionComponent,
     CourseCardsPageComponent,
     CoursePageComponent,
-    DancePageComponent
+    DancePageComponent,
+    HomePageComponent
   ],
   imports: [
     BrowserModule,

@@ -21,6 +21,7 @@ import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
 import { v4 as uuidv4 } from 'uuid';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -47,13 +48,10 @@ export class DataManagerService {
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
-      this.searchFilterObservable.next({ dance: params['dance'], move: params['move'], courses: this.readArrayParam(params, 'courses'), notcourse: params['notcourse'], type: params['type'], related: params['related'], todo: params['todo'], script: params['script'], sort: this.readArrayParam(params, 'sort', ["dance", "courseDate", "order", "name"]) });
-      let displayTypeParam = params["displayType"]?.trim();
-      if (!displayTypeParam) {
-        displayTypeParam = RelationDisplayType.cytoscape
-      }
-      this.relationsSelectionObservable.next({ relationTypes: this.readArrayParam(params, "relationTypes", [RelationType.start, RelationType.end]), displayType: displayTypeParam });
-    })
+      this.searchFilterObservable.next({ dance: params['dance'], move: params['move'], courses: this.readArrayParam(params, 'courses'), notcourse: params['notcourse'], type: params['type'], related: params['related'], todo: params['todo'], script: params['script'], sort: this.readArrayParam(params, 'sort') });
+      this.relationsSelectionObservable.next({ relationTypes: this.readArrayParam(params, "relationTypes"), displayType: params["displayType"]?.trim() });
+    });
+
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
     this.movesObservable.subscribe(moves => {
       this.movesNames = new Set(moves.map(move => move.name));

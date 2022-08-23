@@ -4,6 +4,7 @@ import { CourseCardsPageComponent } from '../course-cards-page/course-cards-page
 import { CoursePageComponent } from '../course-page/course-page.component';
 import { DanceCardsPageComponent } from '../dance-cards-page/dance-cards-page.component';
 import { DancePageComponent } from '../dance-page/dance-page.component';
+import { HomePageComponent } from '../home-page/home-page.component';
 import { MoveCardsPageComponent } from '../move-cards-page/move-cards-page.component';
 import { MovePageComponent } from '../move-page/move-page.component';
 import { RelationsPageComponent } from '../relations-page/relations-page.component';
@@ -11,7 +12,7 @@ import { SettingsPageComponent } from '../settings-page/settings-page.component'
 
 
 const routes: Routes = [
-  { path: '', redirectTo: 'moves', pathMatch: 'full' },
+  { path: '', component: HomePageComponent },
   { path: 'settings', component: SettingsPageComponent },
   { path: 'dances', component: DanceCardsPageComponent },
   { path: 'dance/:name', component: DancePageComponent },
