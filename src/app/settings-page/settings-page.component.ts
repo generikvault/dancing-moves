@@ -33,13 +33,17 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     this.subscriptions.push(this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
       const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights };
-      this.navService.navigate([], queryJson);
       this.url = this.createUrl(queryJson);
       localStorage.setItem('secret', value.secretRead);
       localStorage.setItem('secret-write', value.secretWrite);
       localStorage.setItem('special-rights', value.specialRights);
       localStorage.setItem('sheetId', value.sheetId);
       this.settings.isDeveloper = value.isDeveloper;
+      if (environment.isAndroid) {
+        this.settings.initSettings({});
+      } else {
+        this.navService.navigate([], queryJson);
+      }
     }));
     this.settingsForm.patchValue({
       secretRead: this.settings.secretReadString,
