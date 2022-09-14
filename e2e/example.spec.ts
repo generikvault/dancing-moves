@@ -31,21 +31,21 @@ test.describe('basic functions', () => {
     browser = await chromium.launch();
     const page = await browser.newPage();
     test.setTimeout(120000);
-    await page.goto(``);
+    await page.goto(`/`);
   });
 
   test('test dancing moves', async ({ page }) => {
     allure.story("Some Story");
     allure.tag("Create Dance");
     allure.epic("Dance");
-    // Go to baseUrl/move/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape
+    // Go to baseUrl/move/new
     await page.goto(`/move/new`);
     // Click mat-nav-list[role="navigation"] >> text=Dances
     await page.locator('mat-nav-list[role="navigation"] >> text=Dances').click();
-    await expect(page).toHaveURL(`/dances?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape`);
+    await expect(page).toHaveURL(`/dances`);
     // Click [aria-label="create new"]
     await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL(`/dance/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape`);
+    await expect(page).toHaveURL(`/dance/new`);
     // Click div:has-text("Name *") >> nth=2
     await page.locator('div:has-text("Name *")').nth(2).click();
     // Fill #mat-input-10
@@ -56,13 +56,13 @@ test.describe('basic functions', () => {
     await page.locator('#mat-input-11').fill('Latin');
     // Click button:has-text("Save")
     await page.locator('button:has-text("Save")').click();
-    await expect(page).toHaveURL(`/dance/Bachata?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape`);
+    await expect(page).toHaveURL(`/dance/Bachata`);
     // Click text=Dancing Moves
     await page.locator('text=Dancing Moves').click();
-    await expect(page).toHaveURL(`/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape`);
+    await expect(page).toHaveURL(`/moves`);
     // Click [aria-label="create new"]
     await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL(`/move/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape`);
+    await expect(page).toHaveURL(`/move/new`);
     // Click #mat-input-16
     await page.locator('#mat-input-16').click();
     // Fill #mat-input-16
@@ -87,16 +87,16 @@ test.describe('basic functions', () => {
     allure.story("other Story");
     allure.tag("Create Dance");
     allure.epic("Move");
-    // Go to http://localhost:4200/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape
-    await page.goto('http://localhost:4200/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+    // Go to http://localhost:4200/moves
+    await page.goto('http://localhost:4200/moves');
 
     // Click text=Dances
     await page.locator('text=Dances').click();
-    await expect(page).toHaveURL('http://localhost:4200/dances?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+    await expect(page).toHaveURL('http://localhost:4200/dances');
 
     // Click [aria-label="create new"]
     await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL('http://localhost:4200/dance/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+    await expect(page).toHaveURL('http://localhost:4200/dance/new');
 
     // Click #mat-input-3
     await page.locator('#mat-input-3').click();
@@ -112,15 +112,15 @@ test.describe('basic functions', () => {
 
     // Click button:has-text("Save")
     await page.locator('button:has-text("Save")').click();
-    await expect(page).toHaveURL('http://localhost:4200/dance/Bachata?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+    await expect(page).toHaveURL('http://localhost:4200/dance/Bachata');
 
     // Click text=Dancing Moves
     await page.locator('text=Dancing Moves').click();
-    await expect(page).toHaveURL('http://localhost:4200/moves?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+    await expect(page).toHaveURL('http://localhost:4200/moves');
 
     // Click [aria-label="create new"]
     await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL('http://localhost:4200/move/new?sort=dance&sort=courseDate&sort=order&sort=name&relationTypes=start&relationTypes=end&displayType=cytoscape');
+    await expect(page).toHaveURL('http://localhost:4200/move/new');
 
     // Click div:has-text("Name *") >> nth=2
     await page.locator('div:has-text("Name *")').nth(2).click();
