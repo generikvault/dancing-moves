@@ -115,13 +115,17 @@ export class SettingsService {
     }
     const password = this.passwordPerCourse.get(course.name);
     for (const content of course.contents) {
-      try {
-        const encrypted = CryptoES.AES.encrypt(content.link, password);
-        const encryptedString = encrypted.toString();
-        content.linkEncripted = encryptedString;
-      } catch (e) {
-        console.log('incorrect password', content, password, e);
-        return;
+      if (password) {
+        try {
+          const encrypted = CryptoES.AES.encrypt(content.link, password);
+          const encryptedString = encrypted.toString();
+          content.linkEncripted = encryptedString;
+        } catch (e) {
+          console.log('incorrect password', content, password, e);
+          return;
+        }
+      } else {
+        content.linkEncripted = content.link
       }
     }
   }
