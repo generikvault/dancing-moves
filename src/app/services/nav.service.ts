@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,16 @@ import { environment } from 'src/environments/environment';
 export class NavService {
   headlineObservable = new BehaviorSubject<string>("Dancing Moves");
   fragment?: string;
-  constructor(private router: Router) { }
+  constructor(private router: Router, private settings: SettingsService) {
+
+    if (environment.isAndroid) {
+      // @ts-ignore
+      universalLinks.subscribe('eventName', (eventData: any) => {
+        this.settings.log('Did launch application from the link', eventData.url);
+        this.router.navigateByUrl(eventData.url);
+      });
+    }
+  }
 
   navigate(route: string[] = [], queryParams: Params | undefined = undefined, fragment?: string): Promise<boolean> {
     if (route.length == 0 && environment.isAndroid) {

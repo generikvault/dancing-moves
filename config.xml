@@ -14,4 +14,16 @@
       <preference name="android-minSdkVersion" value="22" />
       <preference name="android-targetSdkVersion" value="32" />
     </platform>
+    <universal-links>
+      <host name="mvolkert.github.io">
+        <path url="/dancing-moves" />
+        <path url="/dancing-moves/dances" />
+        <path url="/dancing-moves/dance/*" />
+        <path url="/dancing-moves/courses" />
+        <path url="/dancing-moves/course/*" />
+        <path url="/dancing-moves/moves" />
+        <path url="/dancing-moves/move/*" />
+        <path url="/dancing-moves/relations" />
+      </host>
+    </universal-links>
 </widget>
