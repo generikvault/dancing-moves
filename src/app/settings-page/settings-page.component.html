@@ -8,18 +8,21 @@
         <input matInput formControlName="secretWrite">
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Special Rights</mat-label>
-        <input matInput formControlName="specialRights">
-    </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Google Sheet ID</mat-label>
         <input matInput formControlName="sheetId">
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Special Rights</mat-label>
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="specialRights"></textarea>
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Resulting Url</mat-label>
-        <input readonly matInput [value]="url">
+        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
+            formControlName="specialRights" readonly [value]="url"></textarea>
     </mat-form-field>
     <button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
+    <mat-divider></mat-divider>
     <mat-slide-toggle formControlName="isDeveloper">
         Developer
     </mat-slide-toggle>
