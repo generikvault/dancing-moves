@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "io.github.mvolkert.dancingmoves",
+            "sha256_cert_fingerprints": [
+                "14:92:F3:BC:E4:8D:33:F3:07:D7:25:DD:D6:F3:7E:7B:72:4A:2E:F1:34:0A:A1:76:B4:DA:B7:70:A0:1C:2A:20"
+            ]
+        }
+    }
+]
