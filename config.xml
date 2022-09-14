@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.github.mvolkert.dancingmoves" version="0.1.11" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="io.github.mvolkert.dancingmoves" version="0.1.12" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Dancing Moves</name>
     <description>Dancing Moves</description>
     <author email="marco.volkert24@gmail.com" href="https://cordova.apache.org">
@@ -15,15 +15,15 @@
       <preference name="android-targetSdkVersion" value="32" />
     </platform>
     <universal-links>
-      <host name="mvolkert.github.io/dancing-moves" scheme="https">
-        <path url="/" />
-        <path url="dances" />
-        <path url="dance/*" />
-        <path url="courses" />
-        <path url="course/*" />
-        <path url="moves" />
-        <path url="move/*" />
-        <path url="relations" />
+      <host name="mvolkert.github.io" scheme="https">
+        <path url="dancing-moves" />
+        <path url="dancing-moves/dances" />
+        <path url="dancing-moves/dance/*" />
+        <path url="dancing-moves/courses" />
+        <path url="dancing-moves/course/*" />
+        <path url="dancing-moves/moves" />
+        <path url="dancing-moves/move/*" />
+        <path url="dancing-moves/relations" />
       </host>
     </universal-links>
 </widget>
