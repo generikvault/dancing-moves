@@ -13,10 +13,12 @@ export class NavService {
   constructor(private router: Router, private settings: SettingsService) {
 
     if (environment.isAndroid) {
-      // @ts-ignore
-      universalLinks.subscribe('eventName', (eventData: any) => {
-        this.settings.log('Did launch application from the link', eventData.url);
-        this.router.navigateByUrl(eventData.url);
+      document.addEventListener("deviceready", () => {
+        // @ts-ignore
+        universalLinks.subscribe('openApp', (eventData: any) => {
+          this.settings.log('Did launch application from the link', eventData.url);
+          this.router.navigateByUrl(eventData.url.replace('https://mvolkert.github.io/dancing-moves', ''));
+        });
       });
     }
   }
