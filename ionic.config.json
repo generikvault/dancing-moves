@@ -1,0 +1,7 @@
+{
+  "name": "io.github.mvolkert.dancingmoves",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

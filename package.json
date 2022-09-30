@@ -8,11 +8,11 @@
     "build": "ng build --configuration production",
     "build:github": "ng build --configuration production --base-href https://mvolkert.github.io",
     "android:build": "ng build --configuration android --base-href ./",
-    "android:debug": "npx cordova build android",
-    "android:emulate": "npx cordova emulate android",
+    "android:debug": "npx capacitor build android",
+    "android:emulate": "npx capacitor run android",
     "android:emulate:all": "npm run android:build && npm run android:debug &&npm run android:emulate",
     "android:simulate": "npx cordova-simulate android --target=chrome",
-    "android:release": "ng build --configuration android-prod --base-href ./ && npx cordova build android --release",
+    "android:release": "ng build --configuration android-prod --base-href ./ && npx capacitor build android --release",
     "android:keystore": "keytool -genkey -v -keystore dancingmoves.keystore -alias dancingmovesmobileapps -keyalg RSA -keysize 2048 -validity 10000",
     "android:jarsigner": "jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore dancingmoves.keystore platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk dancingmovesmobileapps",
     "watch": "ng build --watch --configuration development",
@@ -20,7 +20,9 @@
     "deploy": "ng deploy --base-href=/dancing-moves/ --no-silent",
     "e2eGenerate": "npx playwright codegen http://localhost:4200/",
     "e2e": "npx playwright test && npx playwright show-report",
-    "allure": "npx allure generate allure-results -o allure-report --clean && npx allure open allure-report"
+    "allure": "npx allure generate allure-results -o allure-report --clean && npx allure open allure-report",
+    "ionic:build": "npm run build",
+    "ionic:serve": "npm run start"
   },
   "private": true,
   "dependencies": {
@@ -36,6 +38,12 @@
     "@angular/router": "^14.1.0",
     "@awesome-cordova-plugins/core": "^5.44.0",
     "@awesome-cordova-plugins/google-plus": "^5.44.0",
+    "@capacitor/android": "4.2.0",
+    "@capacitor/app": "4.0.1",
+    "@capacitor/core": "4.2.0",
+    "@capacitor/haptics": "4.0.1",
+    "@capacitor/keyboard": "4.0.1",
+    "@capacitor/status-bar": "4.0.1",
     "cordova-plugin-googleplus": "^8.5.2",
     "crypto-browserify": "~3.12.0",
     "crypto-es": "~1.2.7",
@@ -54,6 +62,7 @@
     "@angular/cli": "^14.1.0",
     "@angular/compiler-cli": "^14.1.0",
     "@bgotink/playwright-coverage": "^0.1.5",
+    "@capacitor/cli": "4.2.0",
     "@playwright/test": "^1.25.0",
     "@types/codemirror": "~5.60.5",
     "@types/cytoscape": "~3.19.7",
@@ -65,7 +74,6 @@
     "angular-cli-ghpages": "~1.0.3",
     "buffer": "~6.0.3",
     "cordova": "^11.0.0",
-    "cordova-android": "^11.0.0",
     "cordova-plugin-deeplinks": "^1.1.1",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",
@@ -75,16 +83,5 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
     "typescript": "~4.7.4"
-  },
-  "cordova": {
-    "platforms": [
-      "android"
-    ],
-    "plugins": {
-      "cordova-plugin-googleplus": {
-        "PLAY_SERVICES_VERSION": "15.0.1"
-      },
-      "cordova-plugin-deeplinks": {}
-    }
   }
 }
