@@ -53,7 +53,7 @@ Thumbs.db
 /platforms/
 
 www
-dancingmoves.keystore
+**/dancingmoves.keystore
 .idea
 build.json
 /simulation
