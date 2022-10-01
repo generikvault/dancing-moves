@@ -53,8 +53,9 @@ Thumbs.db
 /platforms/
 
 www
-dancingmoves.keystore
+**/dancingmoves.keystore
 .idea
 build.json
 /simulation
 /ul_web_hooks
+resources/android/**/*

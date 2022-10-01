@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { Params, Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { SettingsService } from './settings.service';
+import { App, URLOpenListenerEvent } from '@capacitor/app';
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +11,20 @@ import { SettingsService } from './settings.service';
 export class NavService {
   headlineObservable = new BehaviorSubject<string>("Dancing Moves");
   fragment?: string;
-  constructor(private router: Router, private settings: SettingsService) {
+  constructor(private router: Router, private settings: SettingsService, private zone: NgZone) {
 
     if (environment.isAndroid) {
-      document.addEventListener("deviceready", () => {
-        // @ts-ignore
-        universalLinks.subscribe('openApp', (eventData: any) => {
-          this.settings.log('Did launch application from the link', eventData.url);
-          this.router.navigateByUrl(eventData.url.replace('https://mvolkert.github.io/dancing-moves', ''));
+      App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
+        this.zone.run(() => {
+          // Example url: https://beerswift.app/tabs/tab2
+          // slug = /tabs/tab2
+          const slug = event.url.split(".app").pop();
+          if (slug) {
+            this.settings.log('Did launch application from the link', slug);
+            this.router.navigateByUrl(slug.replace('https://mvolkert.github.io/dancing-moves', ''));
+          }
+          // If no match, do nothing - let regular routing
+          // logic take over
         });
       });
     }

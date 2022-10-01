@@ -1,0 +1,7 @@
+{
+  "name": "Dancing Moves",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

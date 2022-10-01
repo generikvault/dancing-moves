@@ -9,6 +9,7 @@
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <platform name="android">
+        <preference name="AndroidXEnabled" value="true" />
       <allow-intent href="market:*" />
       <icon src="src/assets/woman-dancing-svgrepo-com.png" />
       <preference name="android-minSdkVersion" value="22" />
