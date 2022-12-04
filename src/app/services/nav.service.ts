@@ -9,6 +9,7 @@ import { App, URLOpenListenerEvent } from '@capacitor/app';
   providedIn: 'root'
 })
 export class NavService {
+  readonly baseUrl = 'https://mvolkert.github.io/dancing-moves';
   headlineObservable = new BehaviorSubject<string>("Dancing Moves");
   fragment?: string;
   constructor(private router: Router, private settings: SettingsService, private zone: NgZone) {
@@ -21,7 +22,7 @@ export class NavService {
           const slug = event.url.split(".app").pop();
           if (slug) {
             this.settings.log('Did launch application from the link', slug);
-            this.router.navigateByUrl(slug.replace('https://mvolkert.github.io/dancing-moves', ''));
+            this.router.navigateByUrl(slug.replace(this.baseUrl, ''));
           }
           // If no match, do nothing - let regular routing
           // logic take over
@@ -42,6 +43,14 @@ export class NavService {
 
   getPath(): string {
     return document.location.pathname;
+  }
+
+  getRelativePath(): string {
+    const relPath = document.location.pathname?.replace(this.baseUrl, '').replace("http://localhost/", '');
+    if (relPath.length == 1) {
+      return "";
+    }
+    return relPath;
   }
 
 
