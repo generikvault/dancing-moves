@@ -21,11 +21,16 @@ export class AppComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.settingsService.fetchSettings();
     this.dataManagerService.start();
-    await this.navService.navigate(['dances']);
-    await this.navService.navigate(['courses']);
-    await this.navService.navigate(['moves']);
-    await this.navService.navigate(['relations']);
-    await this.navService.navigate(['settings']);
-    await this.navService.navigate(['moves']);
+    if (environment.isAndroid) {
+      const currentPath = this.navService.getRelativePath();
+      await this.navService.navigate(['dances']);
+      await this.navService.navigate(['courses']);
+      await this.navService.navigate(['moves']);
+      await this.navService.navigate(['relations']);
+      await this.navService.navigate(['settings']);
+      await this.navService.navigate(['moves']);
+      console.log('currentPath', currentPath);
+      if (currentPath) await this.navService.navigate([currentPath]);
+    }
   }
 }
