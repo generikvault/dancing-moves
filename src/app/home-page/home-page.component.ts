@@ -18,15 +18,15 @@ export class HomePageComponent implements OnInit {
 
   async takeTour() {
     await this.navService.navigate(['dances']);
-    await firstValueFrom(interval(1000))
+    await firstValueFrom(interval(100))
     await this.navService.navigate(['courses']);
-    await firstValueFrom(interval(1000))
+    await firstValueFrom(interval(100))
     await this.navService.navigate(['moves']);
-    await firstValueFrom(interval(1000))
+    await firstValueFrom(interval(100))
     await this.navService.navigate(['relations']);
-    await firstValueFrom(interval(1000))
+    await firstValueFrom(interval(100))
     await this.navService.navigate(['settings']);
-    await firstValueFrom(interval(1000))
+    await firstValueFrom(interval(100))
     await this.navService.navigate(['moves']);
   }
 

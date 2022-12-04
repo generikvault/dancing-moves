@@ -69,10 +69,6 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     this.settings.loginGoogle();
   }
 
-  loginGoogle2() {
-    this.settings.loginGoogle2();
-  }
-
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
   }

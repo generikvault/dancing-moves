@@ -10,7 +10,7 @@ import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class SettingsService {
   private client: any;
   isDeveloper: boolean = false;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private googlePlus: GooglePlus, private snackBar: MatSnackBar) { }
+  constructor(private route: ActivatedRoute, private http: HttpClient, private snackBar: MatSnackBar) { }
 
   fetchSettings() {
     this.route.queryParams.subscribe(params => {
@@ -205,19 +205,19 @@ export class SettingsService {
     });
   }
 
-  loginGoogle(prompt = '') {
+  async loginGoogle(prompt = '') {
     if (environment.isAndroid) {
-      this.googlePlus.login(
-        {
-          'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-          'webClientId': environment.clientId,
-          'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-        })
-        .then((res: any) => {
-          this.log('res1', res);
-          this.handleCredentialResponse(res);
-        })
-        .catch((err: any) => this.log('error2', err));
+      GoogleAuth.initialize({
+        clientId: '899905894399-1ifjke5s5a8dq80knqjcrivs4rpq619b.apps.googleusercontent.com',
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      });
+      try {
+        let googleUser = await GoogleAuth.signIn();
+        this.log('res1', googleUser);
+        this.handleCredentialResponse({ access_token: googleUser?.authentication?.accessToken, refreshToken: googleUser?.authentication?.refreshToken, expires_in: 10000, token_type: '' });
+      } catch (err) {
+        this.log('error2', err);
+      }
     } else {
       if (!this.client) {
         this.initClient();
@@ -227,27 +227,6 @@ export class SettingsService {
 
   }
 
-  loginGoogle2(prompt = '') {
-    if (environment.isAndroid) {
-      (window as any).plugins.googleplus.login(
-        {
-          'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-          'webClientId': environment.clientId,
-          'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-        },
-        (res: any) => {
-          this.log('res2', res);
-          this.handleCredentialResponse(res);
-        },
-        (err: any) => this.log('error2', err));
-    } else {
-      if (!this.client) {
-        this.initClient();
-      }
-      this.client?.requestAccessToken();
-    }
-
-  }
   updateLoginGoogle() {
     this.loginGoogle('none');
   }

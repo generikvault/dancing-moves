@@ -16,7 +16,8 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   loaded = false;
   show = "";
-  private valueChangesSubscription!: Subscription
+  private valueChangesSubscription!: Subscription;
+  private startingSubscription!: Subscription
   cy!: cytoscape.Core;
 
   @ViewChild('chartCytoscape')
@@ -28,7 +29,7 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     await this.dataManagerService.loading();
-    this.dataManagerService.isStarting.subscribe(starting => {
+    this.startingSubscription = this.dataManagerService.isStarting.subscribe(starting => {
       this.loaded = !starting;
       if (!starting) {
         this.start();
@@ -106,5 +107,6 @@ export class RelationsPageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.valueChangesSubscription?.unsubscribe();
+    this.startingSubscription?.unsubscribe();
   }
 }
