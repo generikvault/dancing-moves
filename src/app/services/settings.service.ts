@@ -11,6 +11,7 @@ import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GooglePlus } from '@awesome-cordova-plugins/google-plus/ngx';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Injectable({
   providedIn: 'root'
@@ -205,19 +206,20 @@ export class SettingsService {
     });
   }
 
-  loginGoogle(prompt = '') {
+  async loginGoogle(prompt = '') {
     if (environment.isAndroid) {
-      this.googlePlus.login(
-        {
-          'scopes': 'https://www.googleapis.com/auth/spreadsheets', // optional, space-separated list of scopes, If not included or empty, defaults to `profile` and `email`.
-          'webClientId': environment.clientId,
-          'offline': false // optional, but requires the webClientId - if set to true the plugin will also return a serverAuthCode, which can be used to grant offline access to a non-Google server
-        })
-        .then((res: any) => {
-          this.log('res1', res);
-          this.handleCredentialResponse(res);
-        })
-        .catch((err: any) => this.log('error2', err));
+      GoogleAuth.initialize({
+        clientId: environment.clientId,
+        scopes: ['profile', 'email', 'https://www.googleapis.com/auth/spreadsheets'],
+        grantOfflineAccess: true,
+      });
+      try {
+        let googleUser = await GoogleAuth.signIn();
+        this.log('res1', googleUser);
+        this.handleCredentialResponse({ access_token: googleUser?.authentication?.accessToken, refreshToken: googleUser?.authentication?.refreshToken, expires_in: 10000, token_type: '' });
+      } catch (err) {
+        this.log('error2', err);
+      }
     } else {
       if (!this.client) {
         this.initClient();
