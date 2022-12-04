@@ -7,8 +7,9 @@ const config: CapacitorConfig = {
   bundledWebRuntime: false,
   plugins: {
     GoogleAuth: {
-      scopes: ['profile', 'email'],
-      serverClientId: '899905894399-v3cadm0moeq4scdist85ntc16qk5e25f.apps.googleusercontent.com',
+      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+      clientId: '899905894399-7au62afsvq8l1hqcu5mjh6hbll44vr7t.apps.googleusercontent.com',
+      androidClientId: '899905894399-1ifjke5s5a8dq80knqjcrivs4rpq619b.apps.googleusercontent.com',
       forceCodeForRefreshToken: true,
     },
   },

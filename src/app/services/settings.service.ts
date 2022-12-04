@@ -208,9 +208,8 @@ export class SettingsService {
   async loginGoogle(prompt = '') {
     if (environment.isAndroid) {
       GoogleAuth.initialize({
-        clientId: environment.clientId,
-        scopes: ['profile', 'email'],
-        grantOfflineAccess: true,
+        clientId: '899905894399-1ifjke5s5a8dq80knqjcrivs4rpq619b.apps.googleusercontent.com',
+        scopes: ['https://www.googleapis.com/auth/spreadsheets'],
       });
       try {
         let googleUser = await GoogleAuth.signIn();
