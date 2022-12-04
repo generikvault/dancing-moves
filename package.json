@@ -1,7 +1,7 @@
 {
   "name": "io.github.mvolkert.dancingmoves",
   "displayName": "DancingMoves",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -37,9 +37,8 @@
     "@angular/platform-browser": "^14.1.0",
     "@angular/platform-browser-dynamic": "^14.1.0",
     "@angular/router": "^14.1.0",
-    "@awesome-cordova-plugins/core": "^6.2.0",
-    "@awesome-cordova-plugins/google-plus": "^6.2.0",
     "@capacitor/android": "4.6.0",
+    "@capacitor/angular": "^2.0.3",
     "@capacitor/app": "4.1.1",
     "@capacitor/core": "4.6.0",
     "@capacitor/haptics": "4.1.0",

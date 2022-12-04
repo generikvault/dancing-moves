@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiclientService } from './services/apiclient.service';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+import { environment } from 'src/environments/environment';
 import { DataManagerService } from './services/data-manager.service';
 import { SettingsService } from './services/settings.service';
 
@@ -14,7 +15,6 @@ export class AppComponent implements OnInit {
   title = 'dancing-moves';
 
   constructor(private settingsService: SettingsService, private dataManagerService: DataManagerService) {
-
   }
 
   ngOnInit(): void {
