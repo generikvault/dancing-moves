@@ -128,7 +128,7 @@
                 <mat-datepicker #picker></mat-datepicker>
             </mat-form-field>
         </div>
-        <button *ngIf="!readonly" [disabled]="moveForm.disabled" mat-icon-button color="primary" type=button
+        <button *ngIf="!readonly" [disabled]="moveForm.disabled" mat-fab extended color="primary" type=button
             aria-label="Add" (click)="addCourseDateForm()" matTooltip="Add Course Date">
             <mat-icon>add_circle_outline</mat-icon>Add Course Date
         </button>

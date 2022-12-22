@@ -72,7 +72,7 @@
                 <input matInput formControlName="link">
             </mat-form-field>
         </div>
-        <button *ngIf="!readonly" [disabled]="courseForm.disabled" mat-icon-button color="primary" type=button
+        <button *ngIf="!readonly" [disabled]="courseForm.disabled" mat-fab extended color="primary" type=button
             aria-label="Add" (click)="addContentForm()" matTooltip="Add Content">
             <mat-icon>add_circle_outline</mat-icon>Add Content
         </button>

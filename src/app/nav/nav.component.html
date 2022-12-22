@@ -44,11 +44,11 @@
       <button *ngIf="false" mat-mini-fab color="primary" aria-label="normalize" (click)="normalize()">
         <mat-icon>list</mat-icon>
       </button>
-      <button *ngIf="!readonly" mat-mini-fab color="primary" aria-label="create new">
-        <mat-icon (click)="createNew()">add_circle_outline</mat-icon>
+      <button *ngIf="!readonly" mat-mini-fab color="primary" aria-label="create new" (click)="createNew()">
+        <mat-icon>add_circle_outline</mat-icon>
       </button>
-      <button mat-mini-fab color="primary" aria-label="sync data">
-        <mat-icon (click)="syncData()">cached</mat-icon>
+      <button mat-mini-fab color="primary" aria-label="sync data" (click)="syncData()">
+        <mat-icon>cached</mat-icon>
       </button>
     </mat-toolbar>
     <router-outlet></router-outlet>
