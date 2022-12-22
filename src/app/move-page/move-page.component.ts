@@ -1,11 +1,12 @@
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent } from '@angular/material/legacy-autocomplete';
-import { MatLegacyChipInputEvent as MatChipInputEvent, MatLegacyChipSelectionChange as MatChipSelectionChange } from '@angular/material/legacy-chips';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AnchorService } from '../app-routing-module/anchor.service';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
 import { UserMode } from '../model/user-mode';
@@ -14,7 +15,6 @@ import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 import { easterEggMoves } from '../util/data';
 import { deepCopy, nameExistsValidator } from '../util/util';
-import { AnchorService } from '../app-routing-module/anchor.service';
 
 @Component({
   selector: 'app-move-page',

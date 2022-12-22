@@ -95,18 +95,18 @@
     </mat-form-field>
     <mat-form-field *ngIf="!readonly" appearance="fill" class="full-width-adaptive">
         <mat-label>videoname</mat-label>
-        <mat-chip-list #chipList aria-label="videoname selection">
-            <mat-chip *ngFor="let videoname of moveForm.value.videoname" (removed)="remove(videoname)"
+        <mat-chip-grid #chipList aria-label="videoname selection">
+            <mat-chip-row *ngFor="let videoname of moveForm.value.videoname" (removed)="remove(videoname)"
                 (click)="changeSelected(videoname)">
                 {{videoname}}
                 <button matChipRemove>
                     <mat-icon>cancel</mat-icon>
                 </button>
-            </mat-chip>
+            </mat-chip-row>
             <input placeholder="add videoname" #videonameInput [formControl]="videonameControl"
                 [matAutocomplete]="autoVideoname" [matChipInputFor]="chipList"
                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
-        </mat-chip-list>
+        </mat-chip-grid>
         <mat-autocomplete #autoVideoname="matAutocomplete" (optionSelected)="selected($event)">
             <mat-option *ngFor="let videoname of videoNames" [value]="videoname">{{videoname}}</mat-option>
         </mat-autocomplete>

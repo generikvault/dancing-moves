@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatLegacyAutocompleteModule as MatAutocompleteModule } from '@angular/material/legacy-autocomplete';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BehaviorSubject, of } from 'rxjs';
 import { RelationParams } from 'src/app/model/relation-params';
 import { UserMode } from 'src/app/model/user-mode';

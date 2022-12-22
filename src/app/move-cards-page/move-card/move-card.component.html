@@ -1,6 +1,8 @@
 <mat-card [id]="nameUri">
-  <mat-card-title>{{moveDto.name}}</mat-card-title>
-  <mat-card-subtitle>{{moveDto.dance}} {{moveDto.type}}</mat-card-subtitle>
+  <mat-card-header>
+    <mat-card-title>{{moveDto.name}}</mat-card-title>
+    <mat-card-subtitle>{{moveDto.dance}} {{moveDto.type}}</mat-card-subtitle>
+  </mat-card-header>
   <mat-card-content #renderedContent>
     <div *ngFor="let courseDate of moveDto.courseDates">
       <span *ngIf="isDateValid(courseDate)">{{courseDate.date | date: 'dd.MM.yyyy'}}&nbsp;</span>

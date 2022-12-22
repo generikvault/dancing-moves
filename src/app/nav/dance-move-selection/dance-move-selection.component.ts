@@ -1,12 +1,11 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { MatLegacyAutocompleteSelectedEvent as MatAutocompleteSelectedEvent } from '@angular/material/legacy-autocomplete';
-import { MatLegacyChipInputEvent as MatChipInputEvent } from '@angular/material/legacy-chips';
-import { BehaviorSubject, map, Observable, of, Subscription, tap } from 'rxjs';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { map, Observable, Subscription } from 'rxjs';
 import { MoveDto } from 'src/app/model/move-dto';
 import { MoveGroupDto } from 'src/app/model/move-group-dto';
 import { SearchDto } from 'src/app/model/search-dto';
-import { SpecialRight } from 'src/app/model/special-right';
 import { DataManagerService } from 'src/app/services/data-manager.service';
 import { NavService } from 'src/app/services/nav.service';
 import { SettingsService } from 'src/app/services/settings.service';

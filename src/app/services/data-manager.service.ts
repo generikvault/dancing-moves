@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
@@ -7,10 +6,8 @@ import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
-import { DataAccessDto } from '../model/data-access-dto';
 import { MoveDto } from '../model/move-dto';
 import { MoveGroupDto } from '../model/move-group-dto';
-import { RelationDisplayType } from '../model/relation-display-type-enum';
 import { RelationParams } from '../model/relation-params';
 import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
@@ -21,7 +18,7 @@ import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
 import { v4 as uuidv4 } from 'uuid';
-import { environment } from 'src/environments/environment';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'

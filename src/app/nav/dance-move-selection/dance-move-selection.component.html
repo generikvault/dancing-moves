@@ -64,16 +64,16 @@
     </mat-form-field>
     <mat-form-field class="full-width" appearance="fill">
         <mat-label>Sorting</mat-label>
-        <mat-chip-list #chipList aria-label="sort selection">
-            <mat-chip *ngFor="let sortKey of searchForm.value.sort" (removed)="remove(sortKey)">
+        <mat-chip-grid #chipList aria-label="sort selection">
+            <mat-chip-row *ngFor="let sortKey of searchForm.value.sort" (removed)="remove(sortKey)">
                 {{sortKey}}
                 <button matChipRemove>
                     <mat-icon>cancel</mat-icon>
                 </button>
-            </mat-chip>
+            </mat-chip-row>
             <input placeholder="add sort key" #sortInput [formControl]="sortControl" [matAutocomplete]="autoSortKey"
                 [matChipInputFor]="chipList" [matChipInputAddOnBlur]="true" (matChipInputTokenEnd)="add($event)">
-        </mat-chip-list>
+        </mat-chip-grid>
         <mat-autocomplete #autoSortKey="matAutocomplete" (optionSelected)="selected($event)">
             <mat-option *ngFor="let sortKey of sortKeysAll" [value]="sortKey">
                 {{sortKey}}
