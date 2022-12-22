@@ -9,7 +9,7 @@ import { CourseDto } from '../model/course-dto';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Injectable({
