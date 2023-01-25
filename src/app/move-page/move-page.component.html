@@ -105,7 +105,8 @@
             </mat-chip-row>
             <input placeholder="add videoname" #videonameInput [formControl]="videonameControl"
                 [matAutocomplete]="autoVideoname" [matChipInputFor]="chipList"
-                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" (matChipInputTokenEnd)="add($event)">
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes" [matChipInputAddOnBlur]="true"
+                (matChipInputTokenEnd)="add($event)">
         </mat-chip-grid>
         <mat-autocomplete #autoVideoname="matAutocomplete" (optionSelected)="selected($event)">
             <mat-option *ngFor="let videoname of videoNames" [value]="videoname">{{videoname}}</mat-option>
