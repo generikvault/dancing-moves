@@ -1,22 +1,22 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
-import { MoveDto } from '../model/move-dto';
-import { delay, parseBoolean, parseDate, toGermanDate } from '../util/util';
-import { SettingsService } from './settings.service';
 import * as jwt from 'jwt-simple';
-import { SecretWriteDto } from '../model/secret-write-dto';
-import { CourseDateDto } from '../model/course-date-dto';
-import { ResponseUpdate } from '../model/response-update';
-import { ResponseCreate } from '../model/response-create';
-import { ResponseGet } from '../model/response-get';
+import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { ApiToken } from '../model/api-token';
-import { UserMode } from '../model/user-mode';
+import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
+import { DataAccessDto } from '../model/data-access-dto';
+import { MoveDto } from '../model/move-dto';
+import { ResponseCreate } from '../model/response-create';
+import { ResponseGet } from '../model/response-get';
+import { ResponseUpdate } from '../model/response-update';
+import { SecretWriteDto } from '../model/secret-write-dto';
+import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
 import { apiTestData } from '../util/data';
-import { DataAccessDto } from '../model/data-access-dto';
+import { delay, parseBoolean, parseDate, toGermanDate } from '../util/util';
+import { SettingsService } from './settings.service';
 
 @Injectable({
   providedIn: 'root'
@@ -102,7 +102,7 @@ export class ApiclientService {
   }
 
   appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
-    const sheetRange = 'Courses!A2:J2';
+    const sheetRange = 'Courses!A2:L2';
     const body = { values: [this.courseToLine(courseDto)] }
     return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
@@ -138,13 +138,13 @@ export class ApiclientService {
   }
 
   appendDance(danceDto: DanceDto): Observable<ResponseCreate> {
-    const sheetRange = 'Dances!A2:H2';
+    const sheetRange = 'Dances!A2:F2';
     const body = { values: [this.danceToLine(danceDto)] }
     return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
   }
 
   patchDance(danceDto: DanceDto): Observable<ResponseUpdate> {
-    const sheetRange = `Dances!A${danceDto.row}:J${danceDto.row}`;
+    const sheetRange = `Dances!A${danceDto.row}:F${danceDto.row}`;
     const body = { values: [this.danceToLine(danceDto)] }
     return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
   }
