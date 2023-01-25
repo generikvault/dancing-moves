@@ -14,7 +14,7 @@ describe('DanceMoveSelectionComponent', () => {
   let fixture: ComponentFixture<DanceMoveSelectionComponent>;
   const dataManagerService: jasmine.SpyObj<DataManagerService> = jasmine.createSpyObj<DataManagerService>('DataManagerService',
     {
-      start: undefined, loading: undefined, getMove: undefined, getGroupedMoveNames: undefined, getMovesNamesOf: undefined, getMovesNames: undefined,
+      start: undefined, loading: undefined, getMove: undefined, getGroupedMoveNames: of(), getMovesNamesOf: undefined, getMovesNames: undefined,
       getDanceNames: undefined, getCourseNames: undefined, getTypes: undefined, getRelationPairs: of(), saveOrCreate: undefined
     }, { relationsSelectionObservable: new BehaviorSubject<RelationParams>({} as RelationParams) });
   const navService: jasmine.SpyObj<NavService> = jasmine.createSpyObj<NavService>('NavService',

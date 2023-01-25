@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { NavService } from './nav.service';
 
@@ -11,6 +11,9 @@ describe('NavService', () => {
       providers: [
         {
           provide: Router,
+          useValue: {},
+        }, {
+          provide: ActivatedRoute,
           useValue: {},
         }
       ]

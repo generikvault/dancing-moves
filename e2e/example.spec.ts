@@ -1,4 +1,4 @@
-import { test, expect } from '@bgotink/playwright-coverage';
+import { expect, test } from '@bgotink/playwright-coverage';
 import { chromium } from '@playwright/test';
 import { allure } from "allure-playwright";
 /*
@@ -46,8 +46,8 @@ test.describe('basic functions', () => {
     // Click [aria-label="create new"]
     await page.locator('[aria-label="create new"]').click();
     await expect(page).toHaveURL(`/dance/new`);
-    // Click div:has-text("Name *") >> nth=2
-    await page.locator('div:has-text("Name *")').nth(2).click();
+    // Click div:has-text("Name*") >> nth=2
+    await page.getByRole('textbox', { name: 'Name' }).click();
     // Fill #mat-input-10
     await page.locator('#mat-input-10').fill('Bachata');
     // Click #mat-input-11
@@ -67,20 +67,20 @@ test.describe('basic functions', () => {
     await page.locator('#mat-input-16').click();
     // Fill #mat-input-16
     await page.locator('#mat-input-16').fill('Basico');
-    // Click div:has-text("Dance *") >> nth=2
-    await page.locator('div:has-text("Dance *")').nth(2).click();
+    // Click div:has-text("Dance*") >> nth=2
+    await page.locator('#mat-select-24').click();
     // Click text=Bachata
     await page.locator('text=Bachata').click();
-    // Click div:has-text("Type *") >> nth=2
-    await page.locator('div:has-text("Type *")').nth(2).click();
+    // Click div:has-text("Type*") >> nth=2
+    await page.getByRole('textbox', { name: 'Type' }).click();
     // Click #mat-select-26 div >> nth=2
     await page.locator('#mat-select-26 div').nth(2).click();
     // Click #mat-select-value-27 span
     await page.locator('#mat-select-value-27 span').click();
-    // Click div:has-text("Type *") >> nth=2
-    await page.locator('div:has-text("Type *")').nth(2).click();
-    // Click text=Name *BachataDance *OrderCountType * Name VerifiedStart MoveEnd MoveContainsRela
-    await page.locator('text=Name *BachataDance *OrderCountType * Name VerifiedStart MoveEnd MoveContainsRela').click();
+    // Click div:has-text("Type*") >> nth=2
+    await page.getByRole('textbox', { name: 'Type' }).click();
+    // Click text=Name*BachataDance*OrderCountType* Name VerifiedStart MoveEnd MoveContainsRela
+    await page.locator('text=Name*BachataDance*OrderCountType* Name VerifiedStart MoveEnd MoveContainsRela').click();
   });
 
   test('test', async ({ page }) => {
@@ -122,14 +122,14 @@ test.describe('basic functions', () => {
     await page.locator('[aria-label="create new"]').click();
     await expect(page).toHaveURL('http://localhost:4200/move/new');
 
-    // Click div:has-text("Name *") >> nth=2
-    await page.locator('div:has-text("Name *")').nth(2).click();
+    // Click div:has-text("Name*") >> nth=2
+    await page.getByRole('textbox', { name: 'Name' }).click();
 
     // Fill #mat-input-9
     await page.locator('#mat-input-9').fill('Basico');
 
-    // Click div:has-text("Dance *") >> nth=2
-    await page.locator('div:has-text("Dance *")').nth(2).click();
+    // Click div:has-text("Dance*") >> nth=2
+    await page.getByRole('textbox', { name: 'Dance' }).click();
 
     // Click text=Bachata
     await page.locator('text=Bachata').click();
