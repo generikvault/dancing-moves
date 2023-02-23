@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { DataManagerService } from '../services/data-manager.service';
-import { SettingsService } from '../services/settings.service';
-import { NavService } from '../services/nav.service';
 import { UserMode } from '../model/user-mode';
-import { ActivatedRoute, Router } from '@angular/router';
+import { DataManagerService } from '../services/data-manager.service';
+import { NavService } from '../services/nav.service';
+import { SettingsService } from '../services/settings.service';
 
 @Component({
   selector: 'app-nav',

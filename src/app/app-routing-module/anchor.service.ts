@@ -1,6 +1,4 @@
-import { LocationStrategy } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 

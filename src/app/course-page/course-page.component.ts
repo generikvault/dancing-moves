@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormArray, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import CryptoES from 'crypto-es';
 import { Subscription } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 import { CourseDto } from '../model/course-dto';
 import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
@@ -10,7 +10,6 @@ import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 import { convertToEmbed, deepCopy, nameExistsValidator } from '../util/util';
-import { v4 as uuidv4 } from 'uuid';
 
 @Component({
   templateUrl: './course-page.component.html',

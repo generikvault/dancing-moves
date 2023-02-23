@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { delay, firstValueFrom, interval } from 'rxjs';
-import { DataManagerService } from '../services/data-manager.service';
+import { firstValueFrom, interval } from 'rxjs';
 import { NavService } from '../services/nav.service';
 
 @Component({
