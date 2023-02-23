@@ -1,26 +1,7 @@
 import { expect, test } from '@bgotink/playwright-coverage';
 import { chromium } from '@playwright/test';
 import { allure } from "allure-playwright";
-/*
-test('homepage has Playwright in title and get started link linking to the intro page', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-
-  // create a locator
-  const getStarted = page.locator('text=Get Started');
-
-  // Expect an attribute "to be strictly equal" to the value.
-  await expect(getStarted).toHaveAttribute('href', '/docs/intro');
-
-  // Click the get started link.
-  await getStarted.click();
-
-  // Expects the URL to contain intro.
-  await expect(page).toHaveURL(/.*intro/);
-});
-*/
 //const baseUrl = 'https://mvolkert.github.io/dancing-moves';
 
 let browser;
@@ -32,109 +13,39 @@ test.describe('basic functions', () => {
     const page = await browser.newPage();
     test.setTimeout(120000);
     await page.goto(`/`);
+    await browser.close();
   });
 
-  test('test dancing moves', async ({ page }) => {
+  test.only('test dancing moves', async ({ page }) => {
     allure.story("Some Story");
     allure.tag("Create Dance");
     allure.epic("Dance");
-    // Go to baseUrl/move/new
-    await page.goto(`/move/new`);
-    // Click mat-nav-list[role="navigation"] >> text=Dances
-    await page.locator('mat-nav-list[role="navigation"] >> text=Dances').click();
-    await expect(page).toHaveURL(`/dances`);
-    // Click [aria-label="create new"]
-    await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL(`/dance/new`);
-    // Click div:has-text("Name*") >> nth=2
-    await page.getByRole('textbox', { name: 'Name' }).click();
-    // Fill #mat-input-10
-    await page.locator('#mat-input-10').fill('Bachata');
-    // Click #mat-input-11
-    await page.locator('#mat-input-11').click();
-    // Fill #mat-input-11
-    await page.locator('#mat-input-11').fill('Latin');
-    // Click button:has-text("Save")
-    await page.locator('button:has-text("Save")').click();
-    await expect(page).toHaveURL(`/dance/Bachata`);
-    // Click text=Dancing Moves
-    await page.locator('text=Dancing Moves').click();
-    await expect(page).toHaveURL(`/moves`);
-    // Click [aria-label="create new"]
-    await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL(`/move/new`);
-    // Click #mat-input-16
-    await page.locator('#mat-input-16').click();
-    // Fill #mat-input-16
-    await page.locator('#mat-input-16').fill('Basico');
-    // Click div:has-text("Dance*") >> nth=2
-    await page.locator('#mat-select-24').click();
-    // Click text=Bachata
-    await page.locator('text=Bachata').click();
-    // Click div:has-text("Type*") >> nth=2
-    await page.getByRole('textbox', { name: 'Type' }).click();
-    // Click #mat-select-26 div >> nth=2
-    await page.locator('#mat-select-26 div').nth(2).click();
-    // Click #mat-select-value-27 span
-    await page.locator('#mat-select-value-27 span').click();
-    // Click div:has-text("Type*") >> nth=2
-    await page.getByRole('textbox', { name: 'Type' }).click();
-    // Click text=Name*BachataDance*OrderCountType* Name VerifiedStart MoveEnd MoveContainsRela
-    await page.locator('text=Name*BachataDance*OrderCountType* Name VerifiedStart MoveEnd MoveContainsRela').click();
-  });
+    await page.goto(`/`);
 
-  test('test', async ({ page }) => {
-    allure.story("other Story");
-    allure.tag("Create Dance");
-    allure.epic("Move");
-    // Go to http://localhost:4200/moves
-    await page.goto('http://localhost:4200/moves');
+    await test.step('create dance', async () => {
+      await page.locator('mat-nav-list[role="navigation"] >> text=Dances').click();
+      await expect(page).toHaveURL(`/dances`);
+      await page.locator('[aria-label="create new"]').click();
+      await expect(page).toHaveURL(`/dance/new`);
+      await page.getByRole('textbox', { name: 'Name' }).click();
+      await page.getByRole('textbox', { name: 'Name' }).fill('Bachata');
+      await page.getByRole('textbox', { name: 'Type' }).click();
+      await page.getByRole('textbox', { name: 'Type' }).fill('Latin');
+      await page.getByRole('button', { name: 'Save' }).click();
+      await expect(page).toHaveURL(`/dance/Bachata`);
+    })
 
-    // Click text=Dances
-    await page.locator('text=Dances').click();
-    await expect(page).toHaveURL('http://localhost:4200/dances');
-
-    // Click [aria-label="create new"]
-    await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL('http://localhost:4200/dance/new');
-
-    // Click #mat-input-3
-    await page.locator('#mat-input-3').click();
-
-    // Fill #mat-input-3
-    await page.locator('#mat-input-3').fill('Bachata');
-
-    // Click #mat-input-4
-    await page.locator('#mat-input-4').click();
-
-    // Fill #mat-input-4
-    await page.locator('#mat-input-4').fill('Latin');
-
-    // Click button:has-text("Save")
-    await page.locator('button:has-text("Save")').click();
-    await expect(page).toHaveURL('http://localhost:4200/dance/Bachata');
-
-    // Click text=Dancing Moves
-    await page.locator('text=Dancing Moves').click();
-    await expect(page).toHaveURL('http://localhost:4200/moves');
-
-    // Click [aria-label="create new"]
-    await page.locator('[aria-label="create new"]').click();
-    await expect(page).toHaveURL('http://localhost:4200/move/new');
-
-    // Click div:has-text("Name*") >> nth=2
-    await page.getByRole('textbox', { name: 'Name' }).click();
-
-    // Fill #mat-input-9
-    await page.locator('#mat-input-9').fill('Basico');
-
-    // Click div:has-text("Dance*") >> nth=2
-    await page.getByRole('textbox', { name: 'Dance' }).click();
-
-    // Click text=Bachata
-    await page.locator('text=Bachata').click();
-
-    // Click button:has-text("Save")
-    await page.locator('button:has-text("Save")').click();
+    await test.step('create move', async () => {
+      await page.locator('mat-nav-list[role="navigation"] >> text=Dancing Moves').click();
+      await expect(page).toHaveURL(`/moves`);
+      await page.locator('[aria-label="create new"]').click();
+      await expect(page).toHaveURL(`/move/new`);
+      await page.getByRole('textbox', { name: 'Name' }).click();
+      await page.getByRole('textbox', { name: 'Name' }).fill('Basico');
+      await page.locator('app-move-page div').filter({ hasText: 'Dance' }).first().click();
+      await page.locator('text=Bachata').click();
+      await page.locator('app-move-page div').filter({ hasText: 'Type' }).first().click();
+      await page.getByRole('button', { name: 'Save' }).click();
+    });
   });
 });
