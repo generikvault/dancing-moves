@@ -16,7 +16,7 @@ test.describe('basic functions', () => {
     await browser.close();
   });
 
-  test.only('test dancing moves', async ({ page }) => {
+  test('test dancing moves', async ({ page }) => {
     allure.story("Some Story");
     allure.tag("Create Dance");
     allure.epic("Dance");
