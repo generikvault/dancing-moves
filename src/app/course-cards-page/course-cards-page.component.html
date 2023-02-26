@@ -1,4 +1,12 @@
 <mat-progress-bar *ngIf="!loaded" mode="indeterminate"></mat-progress-bar>
+<mat-card>
+  <mat-card-content>
+    <div>
+      <span>quantity: &nbsp;</span>
+      <span>{{courses.length}}</span>
+    </div>
+  </mat-card-content>
+</mat-card>
 <ng-container *ngFor="let course of courses">
   <mat-card>
     <mat-card-header>
