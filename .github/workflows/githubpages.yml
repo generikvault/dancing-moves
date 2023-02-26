@@ -45,7 +45,7 @@ jobs:
         run: npm run build
       - name: Conventional Changelog Action
         id: changelog
-        uses: TriPSs/conventional-changelog-action@main
+        uses: TriPSs/conventional-changelog-action@master
         with:
           github-token: ${{ secrets.TOKEN_GITHUB_ACTION }}
           output-file: "false"
