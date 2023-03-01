@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
 import { BehaviorSubject, firstValueFrom, forkJoin, Observable } from 'rxjs';
 import { defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
+import { v4 as uuidv4 } from 'uuid';
 import { Connection } from '../model/connection';
 import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
@@ -13,12 +15,10 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
-import { deepCopy, delay, generateSortFn, getRow, olderThanADay, convertToEmbed } from '../util/util';
+import { convertToEmbed, deepCopy, delay, generateSortFn, getRow, olderThanADay } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
-import { v4 as uuidv4 } from 'uuid';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable({
   providedIn: 'root'
@@ -41,7 +41,6 @@ export class DataManagerService {
   danceNames = new Set<string>();
   types = new Array<string>();
   toDos = new Array<string>();
-  videoNames = new Array<string>();
 
   constructor(private apiclientService: ApiclientService, private snackBar: MatSnackBar, private route: ActivatedRoute, private navService: NavService, private settingsService: SettingsService) {
     this.route.queryParams.subscribe((params: any) => {
@@ -128,7 +127,6 @@ export class DataManagerService {
   private setCourses(courses: CourseDto[]) {
     this.courses = courses.sort(generateSortFn([c => c.name]));
     this.coursesLenghtSorted = deepCopy(this.courses).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
-    this.videoNames = Array.from(new Set(this.courses.flatMap(c => c.contents).map(c => c.name)));
     localStorage.setItem("courses", JSON.stringify(this.courses));
   }
 
@@ -150,7 +148,6 @@ export class DataManagerService {
     this.dances = JSON.parse(localStorage.getItem("dances") ?? "[]");
     this.moves = JSON.parse(localStorage.getItem("moves") ?? "[]");
     this.courses = JSON.parse(localStorage.getItem("courses") ?? "[]");
-    this.videoNames = Array.from(new Set(this.courses.flatMap(c => c.contents).map(c => c.name)));
     this.settingsService.initCourses(this.courses);
     this.movesSubject.next(this.moves);
     this.movesLenghtSorted = deepCopy(this.moves).sort((a, b) => a.name.length > b.name.length ? -1 : 1);
@@ -233,8 +230,8 @@ export class DataManagerService {
     return this.toDos;
   }
 
-  getVideoNames(): Array<string> {
-    return this.videoNames;
+  getVideoNames(move: MoveDto | undefined): Array<string> {
+    return Array.from(new Set(this.courses.filter(c => move?.courseDates.map(d => d.course).includes(c.name)).flatMap(c => c.contents).map(c => c.name))).sort();
   }
 
   private groupByDance = (xs: MoveDto[]): [string, MoveDto[]] => {

@@ -132,9 +132,9 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       this.toDos = this.dataManager.getToDos().filter(x => x.includes(value.toDo));
     }));
-    this.videoNames = this.dataManager.getVideoNames();
+    this.videoNames = this.dataManager.getVideoNames(this.move);
     this.videonameControl.valueChanges.subscribe(value => {
-      this.videoNames = this.dataManager.getVideoNames().filter(x => !value || x.includes(value));
+      this.videoNames = this.dataManager.getVideoNames(this.move).filter(x => !value || x.includes(value));
     });
     if (this.move) {
       this.moveForm.patchValue(this.move);
