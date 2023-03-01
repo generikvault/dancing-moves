@@ -1,8 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { Params } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { DataBase } from '../model/data-base';
+import { ApiclientService } from '../services/apiclient.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -16,6 +18,7 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     secretWrite: new UntypedFormControl(''),
     specialRights: new UntypedFormControl(''),
     sheetId: new UntypedFormControl(''),
+    dataBases: new UntypedFormArray([]),
     isDeveloper: new UntypedFormControl(false)
   });
   url!: string;
@@ -23,13 +26,21 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   isAndriod = environment.isAndroid;
 
 
-  constructor(private settings: SettingsService, private navService: NavService) {
+  constructor(private settings: SettingsService, private navService: NavService, private apiclientService: ApiclientService) {
     this.navService.headlineObservable.next("Settings");
   }
 
 
   async ngOnInit(): Promise<void> {
     await this.settings.loading();
+    this.settings.dataBases.forEach(this.addDataBaseForm);
+    this.settingsForm.patchValue({
+      secretRead: this.settings.secretReadString,
+      secretWrite: this.settings.secretWriteString,
+      specialRights: this.settings.specialRightsString,
+      sheetId: this.settings.sheetId,
+      dataBases: this.settings.dataBases
+    });
     this.subscriptions.push(this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
       const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights };
@@ -44,13 +55,8 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       } else {
         this.navService.navigate([], queryJson);
       }
+      this.settings.dataBases = value.dataBases;
     }));
-    this.settingsForm.patchValue({
-      secretRead: this.settings.secretReadString,
-      secretWrite: this.settings.secretWriteString,
-      specialRights: this.settings.specialRightsString,
-      sheetId: this.settings.sheetId
-    });
   }
 
   private createUrl(queryJson: Params): string {
@@ -67,6 +73,42 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
 
   loginGoogle() {
     this.settings.loginGoogle();
+  }
+
+  getDataBases() {
+    return (this.settingsForm.get('dataBases') as UntypedFormArray).controls;
+  }
+
+  createNewDataBase() {
+    const dataBases = this.settingsForm.value.dataBases;
+    const lastEntry = dataBases[dataBases.length - 1] as DataBase;
+    if (lastEntry.title && !lastEntry.spreadsheetId) {
+      this.apiclientService.createNewTable(lastEntry.title).subscribe(t => {
+        this.settings.dataBases[this.settings.dataBases.length - 1].spreadsheetId = t.spreadsheetId;
+        this.settingsForm.patchValue({
+          dataBases: this.settings.dataBases
+        });
+      });
+    }
+  }
+
+  isDataBaseEditState(): boolean {
+    const dataBases = this.settingsForm.value.dataBases;
+    const lastEntry = dataBases[dataBases.length - 1] as DataBase;
+    return Boolean(lastEntry?.title) && !lastEntry?.spreadsheetId;
+  }
+
+
+  private createDataBaseForm = () => {
+    return new UntypedFormGroup({
+      title: new UntypedFormControl(''),
+      spreadsheetId: new UntypedFormControl('')
+    });
+  }
+
+  addDataBaseForm = () => {
+    const formArray = this.settingsForm.get("dataBases") as UntypedFormArray;
+    formArray.push(this.createDataBaseForm());
   }
 
   ngOnDestroy(): void {

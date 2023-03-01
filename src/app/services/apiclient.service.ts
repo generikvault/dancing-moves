@@ -9,6 +9,7 @@ import { DanceDto } from '../model/dance-dto';
 import { DataAccessDto } from '../model/data-access-dto';
 import { MoveDto } from '../model/move-dto';
 import { ResponseCreate } from '../model/response-create';
+import { ResponseCreateDb } from '../model/response-create-db';
 import { ResponseGet } from '../model/response-get';
 import { ResponseUpdate } from '../model/response-update';
 import { SecretWriteDto } from '../model/secret-write-dto';
@@ -31,6 +32,13 @@ export class ApiclientService {
   private putPossible = new BehaviorSubject(true);
   private putNumber = 0;
   private putNumberDue = 0;
+  private sheetTemplates = [
+    { name: "Dances", values: ["Name", "Typ", "Musik", "Takt", "Beschreibung", "Links"] },
+    { name: "CourseDates", values: ["Lerndatum", "Coursename", "Tanzfiguren", "Beschreibung"] },
+    { name: "CourseContents", values: ["Name", "Link", "Coursename"] },
+    { name: "Courses", values: ["Coursename", "Dances", "School", "Description", "Teacher", "Level", "Start", "End", "Uhrzeit", "Groupname", "hash", "salt"] },
+    { name: "Moves", values: ["Name", "Tanz", "Beschreibung", "Description Eng", "Lernreihenfolge", "Count", "Name gesichert", "Typ", "Eingang", "Ausgang", "Enthält", "Ähnliche Tanzfiguren", "In anderen Tänzen", "Videoname", "Media", "Links", "ToDo", "id", "Benutzer"] },
+  ]
 
   constructor(private settingsService: SettingsService, private http: HttpClient) {
     this.settingsService.userMode.subscribe(userMode => this.userMode = userMode);
@@ -72,6 +80,37 @@ export class ApiclientService {
       this.settingsService.sheetId as string,
       `CourseContents!A1:C1000`
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
+  }
+
+  createNewTable(tableName = "Test"): Observable<ResponseCreateDb> {
+    const body = {
+      "properties": {
+        "title": "Dancing Moves " + tableName
+      }, "sheets": this.sheetTemplates.map(s => {
+        return {
+          "properties": {
+            "title": s.name
+          },
+          "data": [
+            {
+              "startRow": 0,
+              "startColumn": 0,
+              "rowData": [
+                {
+                  "values": s.values.map(v => {
+                    return {
+                      "userEnteredValue":
+                      {
+                        "stringValue": v
+                      }
+                    }
+                  })
+                }]
+            }]
+        }
+      })
+    }
+    return this.spreadsheetsCreateDb(body);
   }
 
 
@@ -186,6 +225,15 @@ export class ApiclientService {
         this.putPossible.next(true);
       }))
     }));
+  }
+
+  private spreadsheetsCreateDb(body: any): Observable<ResponseCreateDb> {
+    if (this.userMode !== UserMode.write) {
+      return of({} as ResponseCreateDb);
+    }
+    return this.loginWrite().pipe(switchMap(r => {
+      return this.http.post<ResponseCreateDb>(`https://content-sheets.googleapis.com/v4/spreadsheets`, body, { headers: { Authorization: `Bearer ${r.access_token}` } });
+    }))
   }
 
   private loginWrite(): Observable<ApiToken> {

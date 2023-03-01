@@ -23,6 +23,27 @@
     </mat-form-field>
     <button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
     <mat-divider></mat-divider>
+    <div formArrayName="dataBases" *ngIf="settingsForm.value.isDeveloper">
+        <div *ngFor="let dataBase of getDataBases(); let i = index" [formGroupName]="i" class="full-width">
+            <mat-form-field appearance="fill" class="half-width">
+                <mat-label>title</mat-label>
+                <input matInput formControlName="title">
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="half-width">
+                <mat-label>id</mat-label>
+                <input matInput formControlName="spreadsheetId">
+            </mat-form-field>
+        </div>
+        <button *ngIf="isDataBaseEditState()" mat-fab extended color="primary" type=button aria-label="Add"
+            (click)="createNewDataBase()" matTooltip="Create New Database">
+            <mat-icon>add_circle_outline</mat-icon>Create New Database
+        </button>
+        <button *ngIf="!isDataBaseEditState()" mat-fab extended color="primary" type=button aria-label="Add"
+            (click)="addDataBaseForm()" matTooltip="Add New Database">
+            <mat-icon>add_circle_outline</mat-icon>Add New Database
+        </button>
+    </div>
+    <mat-divider></mat-divider>
     <mat-slide-toggle formControlName="isDeveloper">
         Developer
     </mat-slide-toggle>

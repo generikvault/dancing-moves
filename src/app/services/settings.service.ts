@@ -1,16 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Params } from '@angular/router';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 import CryptoES from 'crypto-es';
 import { BehaviorSubject, firstValueFrom, forkJoin, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ApiToken } from '../model/api-token';
 import { CourseDto } from '../model/course-dto';
+import { DataBase } from '../model/data-base';
 import { SecretDto } from '../model/secret-dto';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,7 @@ export class SettingsService {
   sheetNames = new Set<string>();
   userAccessToken!: ApiToken;
   sheetId!: string;
+  dataBases: Array<DataBase> = [];
   private client: any;
   isDeveloper: boolean = false;
 
@@ -67,6 +69,7 @@ export class SettingsService {
       }
       this.specialRightsString = this.getArraySetting(params, 'special-rights');
       this.specialRightPasswords = this.specialRightsString?.split(",")
+      this.dataBases.push({ title: 'main', spreadsheetId: this.sheetId });
       this.isStarting.next(false);
       this.isStarted = true;
     });;

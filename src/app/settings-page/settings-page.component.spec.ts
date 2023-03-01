@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import { ApiclientService } from '../services/apiclient.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
 
@@ -22,7 +22,10 @@ describe('SettingsPageComponent', () => {
         }, {
           provide: NavService,
           useValue: navService,
-        },
+        }, {
+          provide: ApiclientService,
+          useValue: {},
+        }
       ]
     })
       .compileComponents();
