@@ -9,6 +9,7 @@ import { DanceDto } from '../model/dance-dto';
 import { MoveDto } from '../model/move-dto';
 import { ResponseCreate } from '../model/response-create';
 import { ResponseCreateDb } from '../model/response-create-db';
+import { ResponseDelete } from '../model/response-delete';
 import { ResponseGet } from '../model/response-get';
 import { ResponseUpdate } from '../model/response-update';
 import { SecretWriteDto } from '../model/secret-write-dto';
@@ -138,6 +139,11 @@ export class ApiclientService {
     return this.spreadsheetsPut(moveDto.location as string, sheetRange, body);
   }
 
+  deleteData(moveDto: MoveDto): Observable<ResponseDelete> {
+    const sheetRange = `Moves!A${moveDto.row}:U${moveDto.row}`;
+    return this.spreadsheetsDelete(moveDto.location as string, sheetRange);
+  }
+
   appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
     const sheetRange = 'Courses!A2:L2';
     const body = { values: [this.courseToLine(courseDto)] }
@@ -149,7 +155,10 @@ export class ApiclientService {
     const body = { values: [this.courseToLine(courseDto)] }
     return this.spreadsheetsPut(courseDto.location as string, sheetRange, body);
   }
-
+  deleteCourse(dto: CourseDto): Observable<ResponseDelete> {
+    const sheetRange = `Courses!A${dto.row}:L${dto.row}`;
+    return this.spreadsheetsDelete(dto.location as string, sheetRange);
+  }
   appendCourseDate(courseDateDto: CourseDateDto): Observable<ResponseCreate> {
     const sheetRange = 'CourseDates!A2:C2';
     const body = { values: [this.courseDateToLine(courseDateDto)] }
@@ -186,15 +195,20 @@ export class ApiclientService {
     return this.spreadsheetsPut(danceDto.location as string, sheetRange, body);
   }
 
+  deleteDance(dto: DanceDto): Observable<ResponseDelete> {
+    const sheetRange = `Dances!A${dto.row}:F${dto.row}`;
+    return this.spreadsheetsDelete(dto.location as string, sheetRange);
+  }
+
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
     if (this.userMode === UserMode.test) {
       return of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet);
     }
-    return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } })
+    return this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { params: { key: this.settingsService.secret?.apiKey as string } })
       .pipe(
         catchError(error =>
           this.loginWrite().pipe(
-            switchMap(r => this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { headers: { Authorization: `Bearer ${r.access_token}` } })),
+            switchMap(r => this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { headers: { Authorization: `Bearer ${r.access_token}` } })),
             catchError(error => of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet)))),
         tap(r => r.spreadsheetId = sheetId));
   }
@@ -206,11 +220,23 @@ export class ApiclientService {
     const localAppendNummer = this.appendNumber++;
     return this.appendPossible.pipe(filter(p => p && localAppendNummer == this.appendNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
       this.appendPossible.next(false);
-      return this.http.post<ResponseCreate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => {
+      return this.http.post<ResponseCreate>(this.buildUrl(sheetId, sheetRange, type), body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => {
         this.appendNumberDue++;
         this.appendPossible.next(true);
       }))
     }));
+  }
+
+  private buildUrl(sheetId: string, sheetRange: string, type: string = ''): string {
+    return `https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`;
+  }
+
+  private spreadsheetsDelete(sheetId: string, sheetRange: string, type = ':clear'): Observable<ResponseDelete> {
+    if (this.userMode !== UserMode.write || !this.settingsService.isSheetValid(sheetId)) {
+      return of({} as ResponseDelete);
+    }
+    return this.loginWrite().pipe(
+      switchMap(r => this.http.post<ResponseDelete>(this.buildUrl(sheetId, sheetRange, type), null, { headers: { Authorization: `Bearer ${r.access_token}` } })))
   }
 
   private spreadsheetsPut(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseUpdate> {
@@ -220,7 +246,7 @@ export class ApiclientService {
     const localPutNummer = this.putNumber++;
     const doWait = localPutNummer !== 0 && (localPutNummer % 250) === 0;
     return this.putPossible.pipe(filter(p => p && localPutNummer == this.putNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
-      return this.http.put<ResponseUpdate>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}${type}`, body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(async (r) => {
+      return this.http.put<ResponseUpdate>(this.buildUrl(sheetId, sheetRange, type), body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(async (r) => {
         if (doWait) {
           console.log('wait a minute', localPutNummer);
           this.putPossible.next(false);

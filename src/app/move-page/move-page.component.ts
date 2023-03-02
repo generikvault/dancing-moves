@@ -250,6 +250,12 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  onDelete() {
+    if (this.move) {
+      this.dataManager.delete(this.move).subscribe(m => console.log(m));
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.subscriptionsGlobal.forEach(s => s.unsubscribe());

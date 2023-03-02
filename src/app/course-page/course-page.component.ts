@@ -165,6 +165,12 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     }
   }
 
+  onDelete() {
+    if (this.course) {
+      this.dataManager.deleteCourse(this.course).subscribe(m => console.log(m));
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.subscriptionsGlobal.forEach(s => s.unsubscribe());

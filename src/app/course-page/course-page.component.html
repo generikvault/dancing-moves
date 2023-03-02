@@ -85,6 +85,8 @@
     </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="courseForm.invalid">Save</button>
+    <button *ngIf="!readonly" mat-raised-button color="secundary" [disabled]="courseForm.invalid || courseForm.disabled"
+        style="float: right;" (click)="onDelete()">Delete</button>
 </form>
 <div class="description" markdown [data]="course?.description">
 </div>

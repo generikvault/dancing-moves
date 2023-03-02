@@ -141,6 +141,8 @@
     </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit"
         [disabled]="moveForm.invalid || moveForm.disabled" (click)="onSave()">Save</button>
+    <button *ngIf="!readonly" mat-raised-button color="secundary" [disabled]="moveForm.invalid || moveForm.disabled"
+        style="float: right;" (click)="onDelete()">Delete</button>
 </form>
 <div #renderedContent>
     <div class="description" markdown [data]="description">

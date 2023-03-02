@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, firstValueFrom, forkJoin, Observable } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, forkJoin, Observable, of } from 'rxjs';
 import { defaultIfEmpty, filter, map, switchMap, tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { Connection } from '../model/connection';
@@ -345,6 +345,27 @@ export class DataManagerService {
     }
   }
 
+  delete(dto: MoveDto): Observable<MoveDto> {
+    if (!dto.location || !dto.row) {
+      return of(this.deleteMoveData(dto));
+    }
+    return this.apiclientService.deleteData(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteMoveData));
+  }
+
+  deleteCourse(dto: CourseDto): Observable<CourseDto> {
+    if (!dto.location || !dto.row) {
+      return of(this.deleteCourseData(dto));
+    }
+    return this.apiclientService.deleteCourse(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteCourseData));
+  }
+
+  deleteDance(dto: DanceDto): Observable<DanceDto> {
+    if (!dto.location || !dto.row) {
+      return of(this.deleteDanceData(dto));
+    }
+    return this.apiclientService.deleteDance(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteDanceData));
+  }
+
   private addDefaultLocation(dto: DtoBase) {
     if (!dto.location && this.settingsService.dataBases.length > 0) {
       dto.location = this.settingsService.dataBases[0].spreadsheetId;
@@ -398,6 +419,13 @@ export class DataManagerService {
     return moveDto;
   }
 
+  private deleteMoveData = (moveDto: MoveDto): MoveDto => {
+    const moves = deepCopy(this.movesSubject.value).filter(m => m.name != moveDto.name);
+    this.setMoves(moves);
+    this.navService.navigate(["moves"]);
+    return moveDto;
+  }
+
   private updateCourseData = (courseDto: CourseDto): CourseDto => {
     const courses = deepCopy(this.courses).filter(m => m.name != courseDto.name);
     courses.push(courseDto);
@@ -406,11 +434,25 @@ export class DataManagerService {
     return courseDto;
   }
 
+  private deleteCourseData = (courseDto: CourseDto): CourseDto => {
+    const courses = deepCopy(this.courses).filter(m => m.name != courseDto.name);
+    this.setCourses(courses);
+    this.navService.navigate(["courses"]);
+    return courseDto;
+  }
+
   private updateDanceData = (danceDto: DanceDto): DanceDto => {
     const dances = deepCopy(this.dances).filter(m => m.name != danceDto.name);
     dances.push(danceDto);
     this.setDances(dances);
     this.navService.navigate(["dance", danceDto.name]);
+    return danceDto;
+  }
+
+  private deleteDanceData = (danceDto: DanceDto): DanceDto => {
+    const dances = deepCopy(this.dances).filter(m => m.name != danceDto.name);
+    this.setDances(dances);
+    this.navService.navigate(["dances"]);
     return danceDto;
   }
 

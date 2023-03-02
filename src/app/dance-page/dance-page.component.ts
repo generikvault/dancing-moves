@@ -136,7 +136,11 @@ export class DancePageComponent implements OnInit, OnDestroy {
       });
     }
   }
-
+  onDelete() {
+    if (this.dance) {
+      this.dataManager.deleteDance(this.dance).subscribe(m => console.log(m));
+    }
+  }
   ngOnDestroy(): void {
     this.subscriptions.forEach(s => s.unsubscribe());
     this.subscriptionsGlobal.forEach(s => s.unsubscribe());

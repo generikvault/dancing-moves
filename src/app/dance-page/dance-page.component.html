@@ -32,6 +32,8 @@
             formControlName="description"></textarea>
     </mat-form-field>
     <button *ngIf="!readonly" mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Save</button>
+    <button *ngIf="!readonly" mat-raised-button color="secundary" [disabled]="form.invalid || form.disabled"
+        style="float: right;" (click)="onDelete()">Delete</button>
 </form>
 <div class="description" markdown [data]="dance?.description">
 </div>
