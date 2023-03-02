@@ -1,4 +1,6 @@
-export interface DanceDto {
+import { DtoBase } from "./dto-base";
+
+export interface DanceDto extends DtoBase {
     name: string,
     type: string,
     music: string,

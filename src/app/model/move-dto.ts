@@ -1,7 +1,8 @@
 import { CourseDateDto } from "./course-date-dto";
+import { DtoBase } from "./dto-base";
 import { VideoDto } from "./video-dto";
 
-export interface MoveDto {
+export interface MoveDto extends DtoBase {
     name: string,
     dance: string,
     order: number,

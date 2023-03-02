@@ -1,6 +1,7 @@
+import { DtoBase } from "./dto-base"
 import { VideoDto } from "./video-dto"
 
-export interface CourseDto {
+export interface CourseDto extends DtoBase {
     name: string,
     dances: string[],
     school: string,

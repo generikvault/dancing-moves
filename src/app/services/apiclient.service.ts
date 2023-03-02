@@ -1,12 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as jwt from 'jwt-simple';
-import { BehaviorSubject, filter, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, catchError, filter, forkJoin, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { ApiToken } from '../model/api-token';
 import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
-import { DataAccessDto } from '../model/data-access-dto';
 import { MoveDto } from '../model/move-dto';
 import { ResponseCreate } from '../model/response-create';
 import { ResponseCreateDb } from '../model/response-create-db';
@@ -46,38 +45,34 @@ export class ApiclientService {
 
   getMoves(): Observable<Array<MoveDto>> {
     if (this.userMode === UserMode.test) {
-      return of(apiTestData).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));;
+      return of(apiTestData).pipe(map(response => this.mapRows<MoveDto>([response], this.createMoveDto)));;
     }
-    return this.spreadsheetsGet(
-      this.settingsService.sheetId as string,
-      'Moves!A1:S1000'
-    ).pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
+    return this.getAllDataBases('Moves!A1:S1000').pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
+  }
+
+  private getAllDataBases(sheetRange: string): Observable<ResponseGet[]> {
+    return forkJoin(this.settingsService.dataBases.map(d => this.spreadsheetsGet(d.spreadsheetId, sheetRange
+    )));
   }
 
   getCourseDates(): Observable<Array<CourseDateDto>> {
-    return this.spreadsheetsGet(
-      this.settingsService.sheetId as string,
-      'CourseDates!A1:C1000'
-    ).pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
+    return this.getAllDataBases('CourseDates!A1:C1000').pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
   }
 
   getCourses(): Observable<Array<CourseDto>> {
-    return this.spreadsheetsGet(
-      this.settingsService.sheetId as string,
+    return this.getAllDataBases(
       'Courses!A1:L1000'
     ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 
   getDances(): Observable<Array<DanceDto>> {
-    return this.spreadsheetsGet(
-      this.settingsService.sheetId as string,
+    return this.getAllDataBases(
       'Dances!A1:H100'
     ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto)));
   }
 
   getVideos(): Observable<Array<VideoDto>> {
-    return this.spreadsheetsGet(
-      this.settingsService.sheetId as string,
+    return this.getAllDataBases(
       `CourseContents!A1:C1000`
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
   }
@@ -114,88 +109,98 @@ export class ApiclientService {
   }
 
 
-  private mapRows<T>(response: ResponseGet, mapfunc: (row: string[], i: number) => T): Array<T> {
+  private mapRows<T>(responses: ResponseGet[], mapfunc: (row: string[], i: number, sheetId: string) => T): Array<T> {
     const result = new Array<T>();
-    const values = response?.values;
-    if (values?.length > 0) {
-      for (let i = 1; i < values.length; i++) {
-        var row = values[i];
-        if (row[0] || row[1]) {
-          result.push(mapfunc(row, i));
+    for (const response of responses) {
+      const values = response?.values;
+      if (values?.length > 0) {
+        for (let i = 1; i < values.length; i++) {
+          var row = values[i];
+          if (row[0] || row[1]) {
+            result.push(mapfunc(row, i, response.spreadsheetId));
+          }
         }
       }
     }
+
     return result;
   }
 
   appendData(moveDto: MoveDto): Observable<ResponseCreate> {
     const sheetRange = 'Moves!A2:U2';
     const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(moveDto.location as string, sheetRange, body, ':append');
   }
 
   patchData(moveDto: MoveDto): Observable<ResponseUpdate> {
     const sheetRange = `Moves!A${moveDto.row}:U${moveDto.row}`;
     const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(moveDto.location as string, sheetRange, body);
   }
 
   appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
     const sheetRange = 'Courses!A2:L2';
     const body = { values: [this.courseToLine(courseDto)] }
-    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(courseDto.location as string, sheetRange, body, ':append');
   }
 
   patchDataCourse(courseDto: CourseDto): Observable<ResponseUpdate> {
     const sheetRange = `Courses!A${courseDto.row}:L${courseDto.row}`;
     const body = { values: [this.courseToLine(courseDto)] }
-    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(courseDto.location as string, sheetRange, body);
   }
 
   appendCourseDate(courseDateDto: CourseDateDto): Observable<ResponseCreate> {
     const sheetRange = 'CourseDates!A2:C2';
     const body = { values: [this.courseDateToLine(courseDateDto)] }
-    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(courseDateDto.location as string, sheetRange, body, ':append');
   }
 
   patchCourseDate(courseDateDto: CourseDateDto): Observable<ResponseUpdate> {
     const sheetRange = `CourseDates!A${courseDateDto.row}:C${courseDateDto.row}`;
     const body = { values: [this.courseDateToLine(courseDateDto)] }
-    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(courseDateDto.location as string, sheetRange, body);
   }
 
   appendCourseContent(content: VideoDto): Observable<ResponseCreate> {
     const sheetRange = `CourseContents!A2:C2`;
     const body = { values: [this.courseContentToLine(content)] }
-    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(content.location as string, sheetRange, body, ':append');
   }
 
   patchCourseContent(content: VideoDto): Observable<ResponseUpdate> {
     const sheetRange = `CourseContents!A${content.row}:C${content.row}`;
     const body = { values: [this.courseContentToLine(content)] }
-    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(content.location as string, sheetRange, body);
   }
 
   appendDance(danceDto: DanceDto): Observable<ResponseCreate> {
     const sheetRange = 'Dances!A2:F2';
     const body = { values: [this.danceToLine(danceDto)] }
-    return this.spreadsheetsPost(this.settingsService.sheetId as string, sheetRange, body, ':append');
+    return this.spreadsheetsPost(danceDto.location as string, sheetRange, body, ':append');
   }
 
   patchDance(danceDto: DanceDto): Observable<ResponseUpdate> {
     const sheetRange = `Dances!A${danceDto.row}:F${danceDto.row}`;
     const body = { values: [this.danceToLine(danceDto)] }
-    return this.spreadsheetsPut(this.settingsService.sheetId as string, sheetRange, body);
+    return this.spreadsheetsPut(danceDto.location as string, sheetRange, body);
   }
 
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
     if (this.userMode === UserMode.test) {
-      return of({ range: '', majorDimension: '', values: [] } as ResponseGet);
+      return of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet);
     }
-    return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } });
+    return this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { params: { key: this.settingsService.secret?.apiKey as string } })
+      .pipe(
+        catchError(error =>
+          this.loginWrite().pipe(
+            switchMap(r => this.http.get<ResponseGet>(`https://content-sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURI(sheetRange)}`, { headers: { Authorization: `Bearer ${r.access_token}` } })),
+            catchError(error => of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet)))),
+        tap(r => r.spreadsheetId = sheetId));
   }
+
   private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {
-    if (this.userMode !== UserMode.write) {
+    if (this.userMode !== UserMode.write || !this.settingsService.isSheetValid(sheetId)) {
       return of({ updates: { updatedRange: 'T!A42:S42' } } as ResponseCreate);
     }
     const localAppendNummer = this.appendNumber++;
@@ -209,7 +214,7 @@ export class ApiclientService {
   }
 
   private spreadsheetsPut(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseUpdate> {
-    if (this.userMode !== UserMode.write) {
+    if (this.userMode !== UserMode.write || !this.settingsService.isSheetValid(sheetId)) {
       return of({} as ResponseUpdate);
     }
     const localPutNummer = this.putNumber++;
@@ -231,9 +236,9 @@ export class ApiclientService {
     if (this.userMode !== UserMode.write) {
       return of({} as ResponseCreateDb);
     }
-    return this.loginWrite().pipe(switchMap(r => {
-      return this.http.post<ResponseCreateDb>(`https://content-sheets.googleapis.com/v4/spreadsheets`, body, { headers: { Authorization: `Bearer ${r.access_token}` } });
-    }))
+    return this.loginWrite().pipe(switchMap(r =>
+      this.http.post<ResponseCreateDb>(`https://content-sheets.googleapis.com/v4/spreadsheets`, body, { headers: { Authorization: `Bearer ${r.access_token}` } })
+    ))
   }
 
   private loginWrite(): Observable<ApiToken> {
@@ -280,19 +285,19 @@ export class ApiclientService {
     return token;
   }
 
-  private createCourseDateDto = (row: any, i: number): CourseDateDto => {
+  private createCourseDateDto = (row: any, i: number, spreadsheetId: string): CourseDateDto => {
     return {
       date: parseDate(row[0]),
       course: row[1],
       moveId: row[2],
       description: row[3],
-      location: this.settingsService.sheetId,
+      location: spreadsheetId,
       row: i + 1
     };
   }
 
 
-  private createMoveDto = (row: any, i: number): MoveDto => {
+  private createMoveDto = (row: any, i: number, spreadsheetId: string): MoveDto => {
     return {
       name: row[0],
       dance: row[1],
@@ -314,12 +319,12 @@ export class ApiclientService {
       id: row[17],
       row: i + 1,
       courseDates: [],
-      location: this.settingsService.sheetId,
+      location: spreadsheetId,
       videos: []
     };
   }
 
-  private createCourseDto = (row: any, i: number): CourseDto => {
+  private createCourseDto = (row: any, i: number, spreadsheetId: string): CourseDto => {
     return {
       name: row[0],
       dances: this.stringToArray(row[1]),
@@ -334,12 +339,12 @@ export class ApiclientService {
       hash: row[10],
       salt: row[11],
       contents: [],
-      location: this.settingsService.sheetId,
+      location: spreadsheetId,
       row: i + 1
     };
   }
 
-  private createDanceDto = (row: any, i: number): DanceDto => {
+  private createDanceDto = (row: any, i: number, spreadsheetId: string): DanceDto => {
     return {
       name: row[0],
       type: row[1],
@@ -347,30 +352,19 @@ export class ApiclientService {
       rhythm: row[3],
       description: row[4],
       links: row[5],
-      location: this.settingsService.sheetId,
+      location: spreadsheetId,
       row: i + 1
     };
   }
 
-  private createVideoDto = (row: any, i: number): VideoDto => {
+  private createVideoDto = (row: any, i: number, spreadsheetId: string): VideoDto => {
     return {
       name: row[0],
       link: row[1],
       linkEncripted: row[1],
       courseName: row[2],
       changed: false,
-      location: this.settingsService.sheetId,
-      row: i + 1
-    };
-  }
-
-  private createDataAccessDto = (row: any, i: number): DataAccessDto => {
-    return {
-      hash: row[0],
-      sheetName: row[1],
-      name: row[2],
-      description: row[3],
-      salt: row[4],
+      location: spreadsheetId,
       row: i + 1
     };
   }

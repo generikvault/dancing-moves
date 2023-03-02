@@ -1,6 +1,7 @@
 import { SafeResourceUrl } from "@angular/platform-browser";
+import { DtoBase } from "./dto-base";
 
-export interface VideoDto {
+export interface VideoDto extends DtoBase {
     name: string,
     link: string,
     linkEncripted: string,

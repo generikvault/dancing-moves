@@ -144,9 +144,8 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
         this.moveForm.disable();
         this.videonameControl.disable();
         this.readonly = true;
-      } else if (this.settings.sheetId) {
-        this.locations.add(this.settings.sheetId);
       }
+      this.settings.dataBases.forEach(d => this.locations.add(d.spreadsheetId));
     }));
     this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
   }

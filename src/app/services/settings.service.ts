@@ -29,7 +29,6 @@ export class SettingsService {
   passwordPerCourse = new Map<string, string>();
   sheetNames = new Set<string>();
   userAccessToken!: ApiToken;
-  sheetId!: string;
   dataBases: Array<DataBase> = [];
   private client: any;
   isDeveloper: boolean = false;
@@ -52,13 +51,15 @@ export class SettingsService {
     this.secretReadString = this.getSetting(params, 'secret');
     this.secretWriteString = this.getSetting(params, 'secret-write');
     this.userAccessToken = JSON.parse(localStorage.getItem('google-access') ?? '{}');
-    this.sheetId = this.getSetting(params, 'sheetId');
+    this.dataBases = this.stringToDataBases(this.getArraySetting(params, 'dataBases'));
+    console.log('init', this.dataBases);
 
     forkJoin({ read: this.getFile('secret-read.txt'), write: this.getFile('secret-write.txt') }).subscribe(data => {
       this.secret = this.decrypt(data.read, this.secretReadString);
       this.secretWrite = this.decrypt(data.write, this.secretWriteString);
-      if (this.secret && !this.sheetId) {
-        this.sheetId = this.secret.movesSheetId;
+      if (this.secret && this.dataBases.length == 0) {
+        this.dataBases.push({ title: 'main', spreadsheetId: this.secret.movesSheetId });
+        console.log('main', this.dataBases);
       }
       if (this.secret && (this.secretWrite || this.userAccessToken?.access_token)) {
         this.userMode.next(UserMode.write)
@@ -69,7 +70,6 @@ export class SettingsService {
       }
       this.specialRightsString = this.getArraySetting(params, 'special-rights');
       this.specialRightPasswords = this.specialRightsString?.split(",")
-      this.dataBases.push({ title: 'main', spreadsheetId: this.sheetId });
       this.isStarting.next(false);
       this.isStarted = true;
     });;
@@ -239,5 +239,27 @@ export class SettingsService {
       this.snackBar.open(`${msg}: ${JSON.stringify(content)}`, 'OK');
       console.log(msg, content)
     }
+  }
+
+  private dataBaseToString = (dataBase: DataBase): string => {
+    return dataBase.title + "|" + dataBase.spreadsheetId;
+  }
+
+  private stringToDataBase = (dataBaseString: string): DataBase => {
+    return { title: dataBaseString.split('|')[0], spreadsheetId: dataBaseString.split('|')[1] };
+  }
+
+  dataBasesToString = (dataBases: DataBase[]): string => {
+    return dataBases.filter(d => d.title && d.spreadsheetId).map(this.dataBaseToString).join(',');
+  }
+
+  private stringToDataBases = (dataBasesString: string): DataBase[] => {
+    if (!dataBasesString) {
+      return [];
+    }
+    return dataBasesString.split(',').map(this.stringToDataBase);
+  }
+  isSheetValid(sheetId: string): boolean {
+    return this.dataBases.map(d => d.spreadsheetId).includes(sheetId)
   }
 }

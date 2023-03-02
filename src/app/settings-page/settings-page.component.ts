@@ -38,12 +38,11 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       secretRead: this.settings.secretReadString,
       secretWrite: this.settings.secretWriteString,
       specialRights: this.settings.specialRightsString,
-      sheetId: this.settings.sheetId,
       dataBases: this.settings.dataBases
     });
     this.subscriptions.push(this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
-      const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights };
+      const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights, 'dataBases': this.settings.dataBasesToString(value.dataBases) };
       this.url = this.createUrl(queryJson);
       localStorage.setItem('secret', value.secretRead);
       localStorage.setItem('secret-write', value.secretWrite);

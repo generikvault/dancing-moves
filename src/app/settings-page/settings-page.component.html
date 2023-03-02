@@ -8,10 +8,6 @@
         <input matInput formControlName="secretWrite">
     </mat-form-field>
     <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Google Sheet ID</mat-label>
-        <input matInput formControlName="sheetId">
-    </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Special Rights</mat-label>
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
             formControlName="specialRights"></textarea>
@@ -23,7 +19,7 @@
     </mat-form-field>
     <button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
     <mat-divider></mat-divider>
-    <div formArrayName="dataBases" *ngIf="settingsForm.value.isDeveloper">
+    <div formArrayName="dataBases">
         <div *ngFor="let dataBase of getDataBases(); let i = index" [formGroupName]="i" class="full-width">
             <mat-form-field appearance="fill" class="half-width">
                 <mat-label>title</mat-label>
@@ -51,7 +47,5 @@
 <mat-divider></mat-divider>
 <a mat-raised-button href="https://github.com/mvolkert/dancing-moves"><img
         src="assets/github-circle-white-transparent.svg"> GitHub</a>
-<a mat-raised-button href="https://doodle.com/poll/eetiy8nmtsfy7qic?utm_source=poll&utm_medium=link">Vote for new
-    Features</a>
 <button *ngIf="!isAndriod || settingsForm.value.isDeveloper" mat-raised-button color="primary"
     (click)="loginGoogle()">Login To Google</button>
