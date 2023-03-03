@@ -16,7 +16,6 @@ import { ResponseUpdate } from '../model/response-update';
 import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
-import { apiTestData } from '../util/data';
 import { delay, dtoType, parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 
@@ -46,9 +45,6 @@ export class ApiclientService {
   }
 
   getMoves(): Observable<Array<MoveDto>> {
-    if (this.userMode === UserMode.test) {
-      return of(apiTestData).pipe(map(response => this.mapRows<MoveDto>([response], this.createMoveDto)));;
-    }
     return this.getAllDataBases('Moves!A1:S10000').pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
   }
 
@@ -179,16 +175,19 @@ export class ApiclientService {
   }
 
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
-    if (this.userMode === UserMode.test) {
-      return of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet);
+    if (this.settingsService.secret?.apiKey) {
+      return this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { params: { key: this.settingsService.secret?.apiKey as string } })
+        .pipe(
+          catchError(error =>
+            this.loginHeader().pipe(
+              switchMap(headers => this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { headers })),
+              catchError(error => of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet)))),
+          tap(r => r.spreadsheetId = sheetId));
     }
-    return this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { params: { key: this.settingsService.secret?.apiKey as string } })
-      .pipe(
-        catchError(error =>
-          this.loginWrite().pipe(
-            switchMap(r => this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { headers: { Authorization: `Bearer ${r.access_token}` } })),
-            catchError(error => of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet)))),
-        tap(r => r.spreadsheetId = sheetId));
+    return this.loginHeader().pipe(
+      switchMap(headers => this.http.get<ResponseGet>(this.buildUrl(sheetId, sheetRange), { headers })),
+      catchError(error => of({ range: '', majorDimension: '', values: [], spreadsheetId: sheetId } as ResponseGet)),
+      tap(r => r.spreadsheetId = sheetId));
   }
 
   private spreadsheetsPost(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseCreate> {

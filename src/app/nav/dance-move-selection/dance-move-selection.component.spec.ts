@@ -20,7 +20,7 @@ describe('DanceMoveSelectionComponent', () => {
   const navService: jasmine.SpyObj<NavService> = jasmine.createSpyObj<NavService>('NavService',
     ['navigate', 'openWebsiteIfEasterEggFound'], { headlineObservable: new BehaviorSubject<string>("Dancing Moves") });
   const settingsService: jasmine.SpyObj<SettingsService> = jasmine.createSpyObj<SettingsService>('SettingsService',
-    ['fetchSettings', 'loading', 'initSettings'], { userMode: new BehaviorSubject<UserMode>(UserMode.test) });
+    ['fetchSettings', 'loading', 'initSettings'], { userMode: new BehaviorSubject<UserMode>(UserMode.read) });
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [

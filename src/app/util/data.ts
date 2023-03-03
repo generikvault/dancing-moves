@@ -1,56 +1,6 @@
 import { CourseDateDto } from "../model/course-date-dto";
 import { MoveDto } from "../model/move-dto";
-import { ResponseGet } from "../model/response-get";
 import { VideoDto } from "../model/video-dto";
-
-export const apiTestData = {
-    "range": "Tanzfiguren!A1:R500",
-    "majorDimension": "ROWS",
-    "values": [
-        [
-            "Name",
-            "Tanz",
-            "Beschreibung",
-            "Description Eng",
-            "Lernreihenfolge",
-            "Count",
-            "Name gesichert",
-            "Typ",
-            "Eingang",
-            "Ausgang",
-            "Enthält",
-            "Ähnliche Tanzfiguren",
-            "In anderen Tänzen",
-            "Videoname",
-            "Media",
-            "Links",
-            "ToDo",
-            "Benutzer",
-            "__id"
-        ],
-        [
-            "Basico (B)",
-            "Bachata",
-            "",
-            "",
-            "0",
-            "8",
-            "TRUE",
-            "Figur",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "mvolkert",
-            "TTtVY2FVb0AoK0VJVjR2OUtPV0U"
-        ]]
-} as ResponseGet;
-
 
 export const easterEggMoves = {
     Konami: {

@@ -23,7 +23,7 @@ export class SettingsService {
   secretWriteString!: string;
   isStarted = false;
   isStarting = new Subject<boolean>();
-  userMode = new BehaviorSubject<UserMode>(UserMode.test);
+  userMode = new BehaviorSubject<UserMode>(UserMode.read);
   specialRightsString!: string;
   specialRightPasswords!: Array<string>;
   passwordPerCourse = new Map<string, string>();
@@ -61,12 +61,10 @@ export class SettingsService {
         this.dataBases.push({ title: 'main', spreadsheetId: this.secret.movesSheetId });
         console.log('main', this.dataBases);
       }
-      if (this.secret && (this.secretWrite || this.userAccessToken?.access_token)) {
+      if (this.secretWrite || this.userAccessToken?.access_token) {
         this.userMode.next(UserMode.write)
-      } else if (this.secret) {
-        this.userMode.next(UserMode.read)
       } else {
-        this.userMode.next(UserMode.test)
+        this.userMode.next(UserMode.read)
       }
       this.specialRightsString = this.getArraySetting(params, 'special-rights');
       this.specialRightPasswords = this.specialRightsString?.split(",")

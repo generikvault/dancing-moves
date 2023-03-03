@@ -14,7 +14,7 @@ describe('DataManagerService', () => {
   const activatedRoute: jasmine.SpyObj<ActivatedRoute> = jasmine.createSpyObj<ActivatedRoute>('ActivatedRoute', [],
     { params: of(), queryParams: of() });
   const settingsService: jasmine.SpyObj<SettingsService> = jasmine.createSpyObj<SettingsService>('SettingsService',
-    ['fetchSettings', 'loading', 'initSettings'], { userMode: new BehaviorSubject<UserMode>(UserMode.test) });
+    ['fetchSettings', 'loading', 'initSettings'], { userMode: new BehaviorSubject<UserMode>(UserMode.read) });
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [

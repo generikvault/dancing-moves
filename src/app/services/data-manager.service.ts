@@ -90,9 +90,6 @@ export class DataManagerService {
   }
 
   api_get() {
-    if (this.userMode == UserMode.test) {
-      return;
-    }
     this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.apiclientService.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
       if (results.moves.length > 0) {

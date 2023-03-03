@@ -9,7 +9,7 @@ import { SettingsService } from './settings.service';
 describe('ApiclientService', () => {
   let service: ApiclientService;
   const settingsService: jasmine.SpyObj<SettingsService> = jasmine.createSpyObj<SettingsService>('SettingsService',
-    ['fetchSettings', 'loading', 'initSettings'], { userMode: new BehaviorSubject<UserMode>(UserMode.test) });
+    ['fetchSettings', 'loading', 'initSettings'], { userMode: new BehaviorSubject<UserMode>(UserMode.read) });
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
