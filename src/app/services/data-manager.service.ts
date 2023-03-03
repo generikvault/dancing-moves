@@ -16,7 +16,7 @@ import { RelationType } from '../model/relation-type-enum';
 import { SearchDto } from '../model/search-dto';
 import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
-import { convertToEmbed, deepCopy, delay, generateSortFn, getRow, olderThanADay } from '../util/util';
+import { convertToEmbed, deepCopy, delay, escapeRegExp, generateSortFn, getRow, olderThanADay } from '../util/util';
 import { ApiclientService } from './apiclient.service';
 import { NavService } from './nav.service';
 import { SettingsService } from './settings.service';
@@ -249,12 +249,17 @@ export class DataManagerService {
     let description = move.description;
     this.movesLenghtSorted
       .filter(m => m.dance == move.dance)
-      .forEach(m => description = description.replaceAll(` ${m.name}`, ` [${m.name}](move/${m.id})`))
+      .forEach(m => description = description.replaceAll(this.createRegExp(m.name), `$1[${m.name}](move/${m.id})`))
     this.movesLenghtSorted
-      .forEach(m => description = description.replaceAll(` ${m.dance}/${m.name}`, ` [${m.dance}/${m.name}](move/${m.id})`))
+      .forEach(m => description = description.replaceAll(this.createRegExp(`${m.dance}/${m.name}`), `$1[${m.dance}/${m.name}](move/${m.id})`))
     this.coursesLenghtSorted
-      .forEach(course => description = description.replaceAll(` ${course.name}`, ` [${course.name}](course/${course.name})`))
+      .forEach(course => description = description.replaceAll(this.createRegExp(course.name), `$1[${course.name}](course/${encodeURI(course.name)})`))
+    console.log(description)
     return description;
+  }
+
+  private createRegExp(str: string) {
+    return new RegExp(`([^\[])${escapeRegExp(str)}(?!\])`, 'g');
   }
 
   getRelationPairs(types: Array<string>): Observable<Array<Connection>> {

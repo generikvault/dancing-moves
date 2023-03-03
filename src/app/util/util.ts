@@ -105,3 +105,7 @@ export const encodeUriAll = (value: string) => {
         `%${c.charCodeAt(0).toString(16).toUpperCase()}`
     );
 }
+
+export const escapeRegExp = (text: string) => {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
