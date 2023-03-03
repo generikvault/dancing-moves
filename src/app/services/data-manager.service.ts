@@ -510,4 +510,14 @@ export class DataManagerService {
       }), this.tapRequest, map(this.updateDanceData))
     }
   }
+
+  updateLocation(dto: DtoBase | undefined, location: string) {
+    if (dto) {
+      location = this.settingsService.mapTitleToSheetId(location);
+      if (location != dto.location) {
+        dto.row = NaN;
+      }
+      dto.location = location;
+    }
+  }
 }

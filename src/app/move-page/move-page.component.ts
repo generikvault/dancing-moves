@@ -74,7 +74,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.moveForm = this.create_form();
     this.dances = Array.from(new Set(this.dataManager.getDances().map(dance => dance.name))).sort();
     this.otherMovesNames = new Set<string>(["new"]);
-    this.locations = new Set<string>(["local"]);
+    this.locations = new Set<string>(["local", ...this.settings.dataBases.map(d => d.title)]);
 
     if (this.idParam == "new") {
       if (this.move) {
@@ -123,10 +123,10 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       this.move.links = value.links;
       this.move.toDo = value.toDo;
       this.move.courseDates = value.courseDates;
-      this.move.location = value.location;
       this.danceMoves = this.dataManager.getMovesOf(this.move?.dance);
       this.description = this.dataManager.enrichDescription(this.move);
       this.types = this.dataManager.getTypes().filter(x => x.includes(value.type));
+      this.dataManager.updateLocation(this.move, value.location);
       if (this.types.length == 1 && value.type == this.types[0]) {
         this.types = this.dataManager.getTypes();
       }
@@ -136,18 +136,23 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.videonameControl.valueChanges.subscribe(value => {
       this.videoNames = this.dataManager.getVideoNames(this.move).filter(x => !value || x.includes(value));
     });
-    if (this.move) {
-      this.moveForm.patchValue(this.move);
-    }
+    this.patchValue(this.move);
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read && this.move?.location && this.move?.location != 'local') {
         this.moveForm.disable();
         this.videonameControl.disable();
         this.readonly = true;
       }
-      this.settings.dataBases.forEach(d => this.locations.add(d.spreadsheetId));
     }));
     this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
+  }
+
+  private patchValue(dto?: MoveDto) {
+    if (dto) {
+      dto = deepCopy(dto);
+      dto.location = this.settings.mapSheetIdToTitle(dto.location);
+      this.moveForm.patchValue(dto);
+    }
   }
 
   private create_form(): UntypedFormGroup {
@@ -222,7 +227,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       this.moveForm.disable();
       this.videonameControl.disable();
       this.dataManager.saveOrCreate(this.move).subscribe(m => {
-        this.moveForm.patchValue(m);
+        this.patchValue(m);
         const newName = m.name;
         this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
         if (this.nameOriginal != newName && this.nameOriginal != "new") {

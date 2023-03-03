@@ -25,6 +25,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
   form = this.create_form();
   subscriptionsGlobal = new Array<Subscription>();
   subscriptions = new Array<Subscription>();
+  locations = new Set<string>();
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService) {
@@ -49,6 +50,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
     const dances = this.dataManager.getDances();
     this.otherNames = new Set(dances.map(dance => dance.name));
     this.otherNames.add("new");
+    this.locations = new Set<string>(["local", ...this.settings.dataBases.map(d => d.title)]);
 
     if (this.nameParam == "new") {
       if (this.dance) {
@@ -72,9 +74,10 @@ export class DancePageComponent implements OnInit, OnDestroy {
       this.dance.rhythm = value.rhythm;
       this.dance.description = value.description;
       this.dance.links = value.links;
+      this.dataManager.updateLocation(this.dance, value.location);
     }));
     if (this.dance) {
-      this.form.patchValue(this.dance);
+      this.patchValue(this.dance);
     }
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
@@ -82,6 +85,14 @@ export class DancePageComponent implements OnInit, OnDestroy {
         this.readonly = true;
       }
     }));
+  }
+
+  private patchValue(dto?: DanceDto) {
+    if (dto) {
+      dto = deepCopy(dto);
+      dto.location = this.settings.mapSheetIdToTitle(dto.location);
+      this.form.patchValue(dto);
+    }
   }
 
   private create_form() {
@@ -132,7 +143,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
       this.form.disable();
       this.dataManager.saveOrCreateDance(this.dance).subscribe(m => {
         console.log(m);
-        this.form.patchValue(m);
+        this.patchValue(m);
         this.loaded = true;
         this.form.enable();
       });

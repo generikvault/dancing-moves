@@ -61,6 +61,14 @@
         <mat-label>Password</mat-label>
         <input type="password" matInput formControlName="password">
     </mat-form-field>
+    <mat-form-field appearance="fill" class="full-width-adaptive">
+        <mat-label>Save location</mat-label>
+        <mat-select formControlName="location">
+            <mat-option *ngFor="let location of locations" [value]="location">
+                {{location}}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
     <div formArrayName="contents">
         <div *ngFor="let content of getContentControls(); let i = index" [formGroupName]="i" class="full-width">
             <mat-form-field appearance="fill" class="half-width-adaptive">

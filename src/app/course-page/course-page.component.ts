@@ -27,6 +27,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
   courseForm = this.create_form();
   subscriptionsGlobal = new Array<Subscription>();
   subscriptions = new Array<Subscription>();
+  locations = new Set<string>();
 
   constructor(private route: ActivatedRoute, private dataManager: DataManagerService,
     private settings: SettingsService, private navService: NavService) {
@@ -51,6 +52,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     const courses = this.dataManager.getCourses();
     this.otherNames = new Set(courses.map(course => course.name));
     this.otherNames.add("new");
+    this.locations = new Set<string>(["local", ...this.settings.dataBases.map(d => d.title)]);
 
     if (this.nameParam == "new") {
       if (this.course) {
@@ -79,6 +81,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.course.end = value.end;
       this.course.time = value.time;
       this.course.groupName = value.groupName;
+      this.dataManager.updateLocation(this.course, value.location);
       this.course.contents = value.contents.map((c: VideoDto) => {
         c.link = convertToEmbed(c.link);
         return c
@@ -91,7 +94,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.levels = new Set(courses.map(course => course.level));
     }));
     if (this.course) {
-      this.courseForm.patchValue(this.course);
+      this.patchValue(this.course);
     }
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
       if (userMode === UserMode.read) {
@@ -104,6 +107,14 @@ export class CoursePageComponent implements OnInit, OnDestroy {
         }
       }
     }));
+  }
+
+  private patchValue(dto?: CourseDto) {
+    if (dto) {
+      dto = deepCopy(dto);
+      dto.location = this.settings.mapSheetIdToTitle(dto.location);
+      this.courseForm.patchValue(dto);
+    }
   }
 
   private create_form() {
@@ -162,7 +173,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.courseForm.disable();
       this.dataManager.saveOrCreateCourse(this.course).subscribe(m => {
         console.log(m);
-        this.courseForm.patchValue(m);
+        this.patchValue(m);
         this.loaded = true;
         this.courseForm.enable();
       });

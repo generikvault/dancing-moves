@@ -262,4 +262,18 @@ export class SettingsService {
   isSheetValid(sheetId: string): boolean {
     return this.dataBases.map(d => d.spreadsheetId).includes(sheetId)
   }
+
+  mapTitleToSheetId(title: string): string {
+    if (!title && this.dataBases.length > 0) {
+      return this.dataBases[0].spreadsheetId;
+    }
+    return this.dataBases.find(d => d.title == title)?.spreadsheetId ?? 'local';
+  }
+
+  mapSheetIdToTitle(spreadsheetId: string): string {
+    if (!spreadsheetId && this.dataBases.length > 0) {
+      return this.dataBases[0].title;
+    }
+    return this.dataBases.find(d => d.spreadsheetId == spreadsheetId)?.title ?? 'local';
+  }
 }
