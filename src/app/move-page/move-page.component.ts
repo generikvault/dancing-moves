@@ -191,6 +191,8 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     return new UntypedFormGroup({
       course: new UntypedFormControl(''),
       date: new UntypedFormControl(null),
+      location: new UntypedFormControl(''),
+      description: new UntypedFormControl(''),
       row: new UntypedFormControl(''),
       dtoType: new UntypedFormControl('CourseDates')
     });
@@ -254,7 +256,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onDelete() {
     if (this.move) {
-      this.dataManager.delete(this.move).subscribe(m => console.log(m));
+      this.dataManager.deleteMove(this.move).subscribe(m => console.log(m));
     }
   }
 

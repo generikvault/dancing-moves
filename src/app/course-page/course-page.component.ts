@@ -120,6 +120,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       groupName: new UntypedFormControl(''),
       password: new UntypedFormControl(''),
       contents: new UntypedFormArray([]),
+      location: new UntypedFormControl(''),
       row: new UntypedFormControl(''),
       dtoType: new UntypedFormControl('Courses')
     });
@@ -140,6 +141,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     return new UntypedFormGroup({
       name: new UntypedFormControl(''),
       link: new UntypedFormControl(null),
+      location: new UntypedFormControl(''),
       row: new UntypedFormControl(''),
       dtoType: new UntypedFormControl('CourseContents')
     });

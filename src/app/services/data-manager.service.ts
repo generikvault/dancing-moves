@@ -350,25 +350,25 @@ export class DataManagerService {
     }
   }
 
-  delete(dto: MoveDto): Observable<MoveDto> {
+  deleteMove(dto: MoveDto): Observable<MoveDto> {
     if (!dto.location || !dto.row) {
       return of(this.deleteMoveData(dto));
     }
-    return this.apiclientService.deleteData(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteMoveData));
+    return this.deleteCourseDates(dto).pipe(switchMap(d => this.apiclientService.deleteData(dto)), this.tapRequest, map(r => dto), map(this.deleteMoveData));
   }
 
   deleteCourse(dto: CourseDto): Observable<CourseDto> {
     if (!dto.location || !dto.row) {
       return of(this.deleteCourseData(dto));
     }
-    return this.apiclientService.deleteData(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteCourseData));
+    return this.delteCourseContents(dto).pipe(switchMap(d => this.apiclientService.deleteData(dto)), this.tapRequest, map(r => dto), map(this.deleteCourseData));
   }
 
   deleteDance(dto: DanceDto): Observable<DanceDto> {
     if (!dto.location || !dto.row) {
       return of(this.deleteDanceData(dto));
     }
-    return this.apiclientService.deleteData(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteDanceData));
+    return this.apiclientService.deleteData(dto).pipe(this.tapRequest, map(r => dto), map(this.deleteDanceData));
   }
 
   private addDefaultLocation(dto: DtoBase) {
@@ -415,6 +415,23 @@ export class DataManagerService {
         return contentDto;
       }), this.tapRequest)
     }
+  }
+
+  private deleteCourseDates = (moveDto: MoveDto): Observable<MoveDto> => {
+    return forkJoin(moveDto.courseDates.filter(c => c.course && c.date).map(this.delete))
+      .pipe(defaultIfEmpty([]), map(courseDates => moveDto));
+  }
+
+  private delteCourseContents = (courseDto: CourseDto): Observable<CourseDto> => {
+    return forkJoin(courseDto.contents.filter(c => c.name && c.link).map(this.delete))
+      .pipe(defaultIfEmpty([]), map(contents => courseDto));
+  }
+
+  private delete = (dto: DtoBase): Observable<DtoBase> => {
+    if (dto.location && !dto.row) {
+      return of(dto);
+    }
+    return this.apiclientService.deleteData(dto).pipe(this.tapRequest, map(r => dto), map(d => d));
   }
 
   private updateMoveData = (moveDto: MoveDto): MoveDto => {

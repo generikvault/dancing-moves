@@ -92,6 +92,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
       rhythm: new UntypedFormControl(''),
       description: new UntypedFormControl(null),
       links: new UntypedFormControl(null),
+      location: new UntypedFormControl(''),
       row: new UntypedFormControl(''),
     });
   }
@@ -111,6 +112,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
     return new UntypedFormGroup({
       name: new UntypedFormControl(''),
       link: new UntypedFormControl(null),
+      location: new UntypedFormControl(''),
       row: new UntypedFormControl('')
     });
   }
