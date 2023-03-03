@@ -9,5 +9,9 @@
 
 .half-width{
     width: 50%;
+}
+
+.half-width-adaptive{
+    width: 50%;
     max-width: 250px;
 }

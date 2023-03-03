@@ -63,11 +63,11 @@
     </mat-form-field>
     <div formArrayName="contents">
         <div *ngFor="let content of getContentControls(); let i = index" [formGroupName]="i" class="full-width">
-            <mat-form-field appearance="fill" class="half-width">
+            <mat-form-field appearance="fill" class="half-width-adaptive">
                 <mat-label>Name {{i}}</mat-label>
                 <input matInput formControlName="name">
             </mat-form-field>
-            <mat-form-field appearance="fill" class="half-width">
+            <mat-form-field appearance="fill" class="half-width-adaptive">
                 <mat-label>Link {{i}}</mat-label>
                 <input matInput formControlName="link">
             </mat-form-field>

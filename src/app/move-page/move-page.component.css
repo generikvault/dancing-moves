@@ -7,7 +7,7 @@
 	max-width: 500px;
 }
 
-.half-width {
+.half-width-adaptive {
 	width: 50%;
 	max-width: 250px;
 }

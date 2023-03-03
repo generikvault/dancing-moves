@@ -7,19 +7,14 @@
         <mat-label>Secret for writing</mat-label>
         <input matInput formControlName="secretWrite">
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
+    <mat-form-field appearance="fill" class="full-width">
         <mat-label>Special Rights</mat-label>
         <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
             formControlName="specialRights"></textarea>
     </mat-form-field>
-    <mat-form-field appearance="fill" class="full-width-adaptive">
-        <mat-label>Resulting Url</mat-label>
-        <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput
-            formControlName="specialRights" readonly [value]="url"></textarea>
-    </mat-form-field>
-    <button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
     <mat-divider></mat-divider>
     <div formArrayName="dataBases">
+        <h2>Databases</h2>
         <div *ngFor="let dataBase of getDataBases(); let i = index" [formGroupName]="i" class="full-width">
             <mat-form-field appearance="fill" class="half-width">
                 <mat-label>title</mat-label>
@@ -41,9 +36,16 @@
     </div>
     <mat-divider></mat-divider>
     <mat-slide-toggle formControlName="isDeveloper">
-        Developer
+        Developer Mode
     </mat-slide-toggle>
 </form>
+<mat-divider></mat-divider>
+<mat-form-field appearance="fill" class="full-width">
+    <mat-label>Resulting Url</mat-label>
+    <textarea cdkTextareaAutosize cdkAutosizeMinRows="1" cdkAutosizeMaxRows="100" matInput readonly
+        [value]="url"></textarea>
+</mat-form-field>
+<button mat-raised-button color="primary" [cdkCopyToClipboard]="url">Copy Url</button>
 <mat-divider></mat-divider>
 <a mat-raised-button href="https://github.com/mvolkert/dancing-moves"><img
         src="assets/github-circle-white-transparent.svg"> GitHub</a>

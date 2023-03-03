@@ -34,16 +34,12 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   async ngOnInit(): Promise<void> {
     await this.settings.loading();
     this.settings.dataBases.forEach(this.addDataBaseForm);
-    this.settingsForm.patchValue({
-      secretRead: this.settings.secretReadString,
-      secretWrite: this.settings.secretWriteString,
-      specialRights: this.settings.specialRightsString,
-      dataBases: this.settings.dataBases
-    });
+
     this.subscriptions.push(this.settingsForm.valueChanges.subscribe(value => {
       console.log(value);
       const queryJson = { 'secret': value.secretRead, 'secret-write': value.secretWrite, 'special-rights': value.specialRights, 'dataBases': this.settings.dataBasesToString(value.dataBases) };
       this.url = this.createUrl(queryJson);
+      console.log(this.url);
       localStorage.setItem('secret', value.secretRead);
       localStorage.setItem('secret-write', value.secretWrite);
       localStorage.setItem('special-rights', value.specialRights);
@@ -56,6 +52,12 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       }
       this.settings.dataBases = value.dataBases;
     }));
+    this.settingsForm.patchValue({
+      secretRead: this.settings.secretReadString,
+      secretWrite: this.settings.secretWriteString,
+      specialRights: this.settings.specialRightsString,
+      dataBases: this.settings.dataBases
+    });
   }
 
   private createUrl(queryJson: Params): string {

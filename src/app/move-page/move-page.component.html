@@ -16,22 +16,22 @@
             <mat-option *ngFor="let dance of dances" [value]="dance">{{dance}}</mat-option>
         </mat-select>
     </mat-form-field>
-    <mat-form-field appearance="fill" class="half-width">
+    <mat-form-field appearance="fill" class="half-width-adaptive">
         <mat-label>Order</mat-label>
         <input type="number" matInput formControlName="order">
     </mat-form-field>
-    <mat-form-field appearance="fill" class="half-width">
+    <mat-form-field appearance="fill" class="half-width-adaptive">
         <mat-label>Count</mat-label>
         <input type="number" matInput formControlName="count">
     </mat-form-field>
-    <mat-form-field appearance="fill" class="half-width">
+    <mat-form-field appearance="fill" class="half-width-adaptive">
         <mat-label>Type</mat-label>
         <input type="text" matInput formControlName="type" [matAutocomplete]="autoType" matAutocompletePosition="below">
         <mat-autocomplete #autoType="matAutocomplete">
             <mat-option *ngFor="let type of types" [value]="type">{{type}}</mat-option>
         </mat-autocomplete>
     </mat-form-field>
-    <mat-checkbox formControlName="nameVerified" class="half-width">Name Verified</mat-checkbox>
+    <mat-checkbox formControlName="nameVerified" class="half-width-adaptive">Name Verified</mat-checkbox>
     <mat-form-field appearance="fill" class="full-width-adaptive">
         <mat-label>Start Move</mat-label>
         <mat-select formControlName="startMove" multiple>
@@ -115,14 +115,14 @@
 
     <div formArrayName="courseDates">
         <div *ngFor="let courseDate of getCourseDateControls(); let i = index" [formGroupName]="i" class="full-width">
-            <mat-form-field appearance="fill" class="half-width">
+            <mat-form-field appearance="fill" class="half-width-adaptive">
                 <mat-label>Course {{i}}</mat-label>
                 <mat-select formControlName="course">
                     <mat-option>None</mat-option>
                     <mat-option *ngFor="let course of courseNames" [value]="course">{{course}}</mat-option>
                 </mat-select>
             </mat-form-field>
-            <mat-form-field appearance="fill" class="half-width">
+            <mat-form-field appearance="fill" class="half-width-adaptive">
                 <mat-label>Date {{i}}</mat-label>
                 <input matInput [matDatepicker]="picker" formControlName="date">
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
