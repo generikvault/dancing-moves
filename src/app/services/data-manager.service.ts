@@ -96,6 +96,7 @@ export class DataManagerService {
     this.isStarting.next(true);
     forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.apiclientService.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
       if (results.moves.length > 0) {
+        this.addLocal(results);
         this.setDances(results.dances);
         for (const course of results.courses) {
           course.contents = results.videos.filter(content => course.name == content.courseName).sort(generateSortFn([c => c.name]));
@@ -110,6 +111,18 @@ export class DataManagerService {
       localStorage.setItem("date", new Date().toISOString());
       this.isStarting.next(false);
     })
+  }
+
+  private addLocal(results: {
+    moves: MoveDto[];
+    courseDates: CourseDateDto[];
+    dances: DanceDto[];
+    videos: VideoDto[];
+    courses: CourseDto[];
+  }) {
+    results.moves = [...results.moves, ... this.moves.filter(d => d.location == 'local')];
+    results.dances = [...results.dances, ... this.dances.filter(d => d.location == 'local')];
+    results.courses = [...results.courses, ... this.courses.filter(d => d.location == 'local')];
   }
 
   private linkCourseContents = (move: MoveDto) => {
