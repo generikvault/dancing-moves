@@ -361,14 +361,14 @@ export class DataManagerService {
     if (!dto.location || !dto.row) {
       return of(this.deleteCourseData(dto));
     }
-    return this.apiclientService.deleteCourse(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteCourseData));
+    return this.apiclientService.deleteData(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteCourseData));
   }
 
   deleteDance(dto: DanceDto): Observable<DanceDto> {
     if (!dto.location || !dto.row) {
       return of(this.deleteDanceData(dto));
     }
-    return this.apiclientService.deleteDance(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteDanceData));
+    return this.apiclientService.deleteData(dto).pipe(map(r => dto), this.tapRequest, map(this.deleteDanceData));
   }
 
   private addDefaultLocation(dto: DtoBase) {
@@ -392,9 +392,9 @@ export class DataManagerService {
   private saveOrCreateCourseDate = (courseDateDto: CourseDateDto): Observable<CourseDateDto> => {
     this.addDefaultLocation(courseDateDto);
     if (courseDateDto.row) {
-      return this.apiclientService.patchCourseDate(courseDateDto).pipe(map(r => courseDateDto), this.tapRequest);
+      return this.apiclientService.patchData(courseDateDto).pipe(map(r => courseDateDto), this.tapRequest);
     } else {
-      return this.apiclientService.appendCourseDate(courseDateDto).pipe(map(r => {
+      return this.apiclientService.appendData(courseDateDto).pipe(map(r => {
         courseDateDto.row = getRow(r.updates.updatedRange);
         return courseDateDto;
       }), this.tapRequest)
@@ -408,9 +408,9 @@ export class DataManagerService {
   private saveOrCreateCourseContent = (contentDto: VideoDto): Observable<VideoDto> => {
     this.addDefaultLocation(contentDto);
     if (contentDto.row) {
-      return this.apiclientService.patchCourseContent(contentDto).pipe(map(r => contentDto), this.tapRequest);
+      return this.apiclientService.patchData(contentDto).pipe(map(r => contentDto), this.tapRequest);
     } else {
-      return this.apiclientService.appendCourseContent(contentDto).pipe(map(r => {
+      return this.apiclientService.appendData(contentDto).pipe(map(r => {
         contentDto.row = getRow(r.updates.updatedRange);
         return contentDto;
       }), this.tapRequest)
@@ -473,9 +473,9 @@ export class DataManagerService {
     this.addDefaultLocation(courseDto);
     this.settingsService.encrpytCourse(courseDto);
     if (courseDto.row) {
-      return this.apiclientService.patchDataCourse(courseDto).pipe(map(r => courseDto), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData));
+      return this.apiclientService.patchData(courseDto).pipe(map(r => courseDto), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData));
     } else {
-      return this.apiclientService.appendDataCourse(courseDto).pipe(map(r => {
+      return this.apiclientService.appendData(courseDto).pipe(map(r => {
         courseDto.row = getRow(r.updates.updatedRange);
         return courseDto;
       }), this.tapRequest, switchMap(this.saveOrCreateCourseContents), map(this.updateCourseData))
@@ -485,9 +485,9 @@ export class DataManagerService {
   saveOrCreateDance(danceDto: DanceDto): Observable<DanceDto> {
     this.addDefaultLocation(danceDto);
     if (danceDto.row) {
-      return this.apiclientService.patchDance(danceDto).pipe(map(r => danceDto), this.tapRequest, map(this.updateDanceData));
+      return this.apiclientService.patchData(danceDto).pipe(map(r => danceDto), this.tapRequest, map(this.updateDanceData));
     } else {
-      return this.apiclientService.appendDance(danceDto).pipe(map(r => {
+      return this.apiclientService.appendData(danceDto).pipe(map(r => {
         danceDto.row = getRow(r.updates.updatedRange);
         return danceDto;
       }), this.tapRequest, map(this.updateDanceData))

@@ -1,4 +1,7 @@
+import { dtoType } from "../util/util";
+
 export interface DtoBase {
     location: string,
-    row: number
+    row: number,
+    dtoType: dtoType
 }

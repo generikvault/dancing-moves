@@ -6,6 +6,7 @@ import { ApiToken } from '../model/api-token';
 import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
 import { DanceDto } from '../model/dance-dto';
+import { DtoBase } from '../model/dto-base';
 import { MoveDto } from '../model/move-dto';
 import { ResponseCreate } from '../model/response-create';
 import { ResponseCreateDb } from '../model/response-create-db';
@@ -16,7 +17,7 @@ import { SecretWriteDto } from '../model/secret-write-dto';
 import { UserMode } from '../model/user-mode';
 import { VideoDto } from '../model/video-dto';
 import { apiTestData } from '../util/data';
-import { delay, parseBoolean, parseDate, toGermanDate } from '../util/util';
+import { delay, dtoType, parseBoolean, parseDate, toGermanDate } from '../util/util';
 import { SettingsService } from './settings.service';
 
 @Injectable({
@@ -48,7 +49,7 @@ export class ApiclientService {
     if (this.userMode === UserMode.test) {
       return of(apiTestData).pipe(map(response => this.mapRows<MoveDto>([response], this.createMoveDto)));;
     }
-    return this.getAllDataBases('Moves!A1:S1000').pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
+    return this.getAllDataBases('Moves!A1:S10000').pipe(map(response => this.mapRows<MoveDto>(response, this.createMoveDto)));
   }
 
   private getAllDataBases(sheetRange: string): Observable<ResponseGet[]> {
@@ -57,24 +58,24 @@ export class ApiclientService {
   }
 
   getCourseDates(): Observable<Array<CourseDateDto>> {
-    return this.getAllDataBases('CourseDates!A1:C1000').pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
+    return this.getAllDataBases('CourseDates!A1:C10000').pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
   }
 
   getCourses(): Observable<Array<CourseDto>> {
     return this.getAllDataBases(
-      'Courses!A1:L1000'
+      'Courses!A1:L10000'
     ).pipe(map(response => this.mapRows<CourseDto>(response, this.createCourseDto)));
   }
 
   getDances(): Observable<Array<DanceDto>> {
     return this.getAllDataBases(
-      'Dances!A1:H100'
+      'Dances!A1:H200'
     ).pipe(map(response => this.mapRows<DanceDto>(response, this.createDanceDto)));
   }
 
   getVideos(): Observable<Array<VideoDto>> {
     return this.getAllDataBases(
-      `CourseContents!A1:C1000`
+      `CourseContents!A1:C10000`
     ).pipe(map(response => this.mapRows<VideoDto>(response, this.createVideoDto)));
   }
 
@@ -127,77 +128,54 @@ export class ApiclientService {
     return result;
   }
 
-  appendData(moveDto: MoveDto): Observable<ResponseCreate> {
-    const sheetRange = 'Moves!A2:U2';
-    const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPost(moveDto.location as string, sheetRange, body, ':append');
+  appendData(dto: DtoBase): Observable<ResponseCreate> {
+    const sheetRange = this.createRange(dto.dtoType);
+    const body = { values: [this.toLine(dto)] }
+    return this.spreadsheetsPost(dto.location as string, sheetRange, body, ':append');
   }
 
-  patchData(moveDto: MoveDto): Observable<ResponseUpdate> {
-    const sheetRange = `Moves!A${moveDto.row}:U${moveDto.row}`;
-    const body = { values: [this.moveToLine(moveDto)] }
-    return this.spreadsheetsPut(moveDto.location as string, sheetRange, body);
+  patchData(dto: DtoBase): Observable<ResponseUpdate> {
+    const sheetRange = this.createRange(dto.dtoType, dto.row)
+    const body = { values: [this.toLine(dto)] }
+    return this.spreadsheetsPut(dto.location as string, sheetRange, body);
   }
 
-  deleteData(moveDto: MoveDto): Observable<ResponseDelete> {
-    const sheetRange = `Moves!A${moveDto.row}:U${moveDto.row}`;
-    return this.spreadsheetsDelete(moveDto.location as string, sheetRange);
+  deleteData(dto: DtoBase): Observable<ResponseDelete> {
+    return this.spreadsheetsDelete(dto.location as string, this.createRange(dto.dtoType, dto.row));
   }
 
-  appendDataCourse(courseDto: CourseDto): Observable<ResponseCreate> {
-    const sheetRange = 'Courses!A2:L2';
-    const body = { values: [this.courseToLine(courseDto)] }
-    return this.spreadsheetsPost(courseDto.location as string, sheetRange, body, ':append');
+  private createRange(type: dtoType, row: number = 2): string {
+    switch (type) {
+      case 'Dances':
+        return `Dances!A${row}:F${row}`;
+      case 'Moves':
+        return `Moves!A${row}:U${row}`;
+      case 'Courses':
+        return `Courses!A${row}:L${row}`;
+      case 'CourseDates':
+        return `CourseDates!A${row}:C${row}`;
+      case 'CourseContents':
+        return `CourseContents!A${row}:C${row}`;
+      default:
+        return `${type}!A${row}:C${row}`;
+    }
   }
 
-  patchDataCourse(courseDto: CourseDto): Observable<ResponseUpdate> {
-    const sheetRange = `Courses!A${courseDto.row}:L${courseDto.row}`;
-    const body = { values: [this.courseToLine(courseDto)] }
-    return this.spreadsheetsPut(courseDto.location as string, sheetRange, body);
-  }
-  deleteCourse(dto: CourseDto): Observable<ResponseDelete> {
-    const sheetRange = `Courses!A${dto.row}:L${dto.row}`;
-    return this.spreadsheetsDelete(dto.location as string, sheetRange);
-  }
-  appendCourseDate(courseDateDto: CourseDateDto): Observable<ResponseCreate> {
-    const sheetRange = 'CourseDates!A2:C2';
-    const body = { values: [this.courseDateToLine(courseDateDto)] }
-    return this.spreadsheetsPost(courseDateDto.location as string, sheetRange, body, ':append');
-  }
-
-  patchCourseDate(courseDateDto: CourseDateDto): Observable<ResponseUpdate> {
-    const sheetRange = `CourseDates!A${courseDateDto.row}:C${courseDateDto.row}`;
-    const body = { values: [this.courseDateToLine(courseDateDto)] }
-    return this.spreadsheetsPut(courseDateDto.location as string, sheetRange, body);
-  }
-
-  appendCourseContent(content: VideoDto): Observable<ResponseCreate> {
-    const sheetRange = `CourseContents!A2:C2`;
-    const body = { values: [this.courseContentToLine(content)] }
-    return this.spreadsheetsPost(content.location as string, sheetRange, body, ':append');
-  }
-
-  patchCourseContent(content: VideoDto): Observable<ResponseUpdate> {
-    const sheetRange = `CourseContents!A${content.row}:C${content.row}`;
-    const body = { values: [this.courseContentToLine(content)] }
-    return this.spreadsheetsPut(content.location as string, sheetRange, body);
-  }
-
-  appendDance(danceDto: DanceDto): Observable<ResponseCreate> {
-    const sheetRange = 'Dances!A2:F2';
-    const body = { values: [this.danceToLine(danceDto)] }
-    return this.spreadsheetsPost(danceDto.location as string, sheetRange, body, ':append');
-  }
-
-  patchDance(danceDto: DanceDto): Observable<ResponseUpdate> {
-    const sheetRange = `Dances!A${danceDto.row}:F${danceDto.row}`;
-    const body = { values: [this.danceToLine(danceDto)] }
-    return this.spreadsheetsPut(danceDto.location as string, sheetRange, body);
-  }
-
-  deleteDance(dto: DanceDto): Observable<ResponseDelete> {
-    const sheetRange = `Dances!A${dto.row}:F${dto.row}`;
-    return this.spreadsheetsDelete(dto.location as string, sheetRange);
+  private toLine(dto: DtoBase): string[] {
+    switch (dto.dtoType) {
+      case 'Dances':
+        return this.danceToLine(dto as DanceDto);
+      case 'Moves':
+        return this.moveToLine(dto as MoveDto);
+      case 'Courses':
+        return this.courseToLine(dto as CourseDto);
+      case 'CourseDates':
+        return this.courseDateToLine(dto as CourseDateDto);
+      case 'CourseContents':
+        return this.courseContentToLine(dto as VideoDto);
+      default:
+        return [];
+    }
   }
 
   private spreadsheetsGet(sheetId: string, sheetRange: string): Observable<ResponseGet> {
@@ -218,9 +196,9 @@ export class ApiclientService {
       return of({ updates: { updatedRange: 'T!A42:S42' } } as ResponseCreate);
     }
     const localAppendNummer = this.appendNumber++;
-    return this.appendPossible.pipe(filter(p => p && localAppendNummer == this.appendNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
+    return this.appendPossible.pipe(filter(p => p && localAppendNummer == this.appendNumberDue), take(1), switchMap(p => this.loginHeader()), switchMap(headers => {
       this.appendPossible.next(false);
-      return this.http.post<ResponseCreate>(this.buildUrl(sheetId, sheetRange, type), body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => {
+      return this.http.post<ResponseCreate>(this.buildUrl(sheetId, sheetRange, type), body, { headers, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(r => {
         this.appendNumberDue++;
         this.appendPossible.next(true);
       }))
@@ -235,8 +213,8 @@ export class ApiclientService {
     if (this.userMode !== UserMode.write || !this.settingsService.isSheetValid(sheetId)) {
       return of({} as ResponseDelete);
     }
-    return this.loginWrite().pipe(
-      switchMap(r => this.http.post<ResponseDelete>(this.buildUrl(sheetId, sheetRange, type), null, { headers: { Authorization: `Bearer ${r.access_token}` } })))
+    return this.loginHeader().pipe(
+      switchMap(headers => this.http.post<ResponseDelete>(this.buildUrl(sheetId, sheetRange, type), null, { headers })))
   }
 
   private spreadsheetsPut(sheetId: string, sheetRange: string, body: any, type = ''): Observable<ResponseUpdate> {
@@ -245,8 +223,8 @@ export class ApiclientService {
     }
     const localPutNummer = this.putNumber++;
     const doWait = localPutNummer !== 0 && (localPutNummer % 250) === 0;
-    return this.putPossible.pipe(filter(p => p && localPutNummer == this.putNumberDue), take(1), switchMap(p => this.loginWrite()), switchMap(r => {
-      return this.http.put<ResponseUpdate>(this.buildUrl(sheetId, sheetRange, type), body, { headers: { Authorization: `Bearer ${r.access_token}` }, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(async (r) => {
+    return this.putPossible.pipe(filter(p => p && localPutNummer == this.putNumberDue), take(1), switchMap(p => this.loginHeader()), switchMap(headers => {
+      return this.http.put<ResponseUpdate>(this.buildUrl(sheetId, sheetRange, type), body, { headers, params: { valueInputOption: 'USER_ENTERED' } }).pipe(tap(async (r) => {
         if (doWait) {
           console.log('wait a minute', localPutNummer);
           this.putPossible.next(false);
@@ -262,9 +240,13 @@ export class ApiclientService {
     if (this.userMode !== UserMode.write) {
       return of({} as ResponseCreateDb);
     }
-    return this.loginWrite().pipe(switchMap(r =>
-      this.http.post<ResponseCreateDb>(`https://content-sheets.googleapis.com/v4/spreadsheets`, body, { headers: { Authorization: `Bearer ${r.access_token}` } })
+    return this.loginHeader().pipe(switchMap(headers =>
+      this.http.post<ResponseCreateDb>(`https://content-sheets.googleapis.com/v4/spreadsheets`, body, { headers })
     ))
+  }
+
+  private loginHeader(): Observable<any> {
+    return this.loginWrite().pipe(map(r => { return { Authorization: `Bearer ${r.access_token}` } }));
   }
 
   private loginWrite(): Observable<ApiToken> {
@@ -318,7 +300,8 @@ export class ApiclientService {
       moveId: row[2],
       description: row[3],
       location: spreadsheetId,
-      row: i + 1
+      row: i + 1,
+      dtoType: 'CourseDates'
     };
   }
 
@@ -346,7 +329,8 @@ export class ApiclientService {
       row: i + 1,
       courseDates: [],
       location: spreadsheetId,
-      videos: []
+      videos: [],
+      dtoType: 'Moves'
     };
   }
 
@@ -366,7 +350,8 @@ export class ApiclientService {
       salt: row[11],
       contents: [],
       location: spreadsheetId,
-      row: i + 1
+      row: i + 1,
+      dtoType: 'Courses'
     };
   }
 
@@ -379,7 +364,8 @@ export class ApiclientService {
       description: row[4],
       links: row[5],
       location: spreadsheetId,
-      row: i + 1
+      row: i + 1,
+      dtoType: 'Dances'
     };
   }
 
@@ -391,7 +377,8 @@ export class ApiclientService {
       courseName: row[2],
       changed: false,
       location: spreadsheetId,
-      row: i + 1
+      row: i + 1,
+      dtoType: 'CourseContents'
     };
   }
 
@@ -405,26 +392,26 @@ export class ApiclientService {
   }
 
 
-  private moveToLine(moveDto: MoveDto): string[] {
-    return [moveDto.name, moveDto.dance, moveDto.description, moveDto.descriptionEng,
-    String(moveDto.order), moveDto.count, String(moveDto.nameVerified),
-    moveDto.type, moveDto.startMove?.join(","), moveDto.endMove?.join(","), moveDto.containedMoves?.join(","), moveDto.relatedMoves?.join(","), moveDto.relatedMovesOtherDances?.join(","),
-    moveDto.videoname?.join(','), moveDto.media, moveDto.links, moveDto.toDo, moveDto.id]
+  private moveToLine(dto: MoveDto): string[] {
+    return [dto.name, dto.dance, dto.description, dto.descriptionEng,
+    String(dto.order), dto.count, String(dto.nameVerified),
+    dto.type, dto.startMove?.join(","), dto.endMove?.join(","), dto.containedMoves?.join(","), dto.relatedMoves?.join(","), dto.relatedMovesOtherDances?.join(","),
+    dto.videoname?.join(','), dto.media, dto.links, dto.toDo, dto.id]
   }
 
-  private courseDateToLine(courseDateDto: CourseDateDto): string[] {
-    return [toGermanDate(courseDateDto.date), courseDateDto.course, courseDateDto.moveId, courseDateDto.description]
+  private courseDateToLine(dto: CourseDateDto): string[] {
+    return [toGermanDate(dto.date), dto.course, dto.moveId, dto.description]
   }
 
-  private courseToLine(courseDto: CourseDto): string[] {
-    return [courseDto.name, courseDto.dances?.join(","), courseDto.school, courseDto.description, courseDto.teacher, courseDto.level, toGermanDate(courseDto.start), toGermanDate(courseDto.end), courseDto.time, courseDto.groupName, courseDto.hash, courseDto.salt]
+  private courseToLine(dto: CourseDto): string[] {
+    return [dto.name, dto.dances?.join(","), dto.school, dto.description, dto.teacher, dto.level, toGermanDate(dto.start), toGermanDate(dto.end), dto.time, dto.groupName, dto.hash, dto.salt]
   }
 
-  private courseContentToLine(courseDataDto: VideoDto): string[] {
-    return [courseDataDto.name, courseDataDto.linkEncripted, courseDataDto.courseName]
+  private courseContentToLine(dto: VideoDto): string[] {
+    return [dto.name, dto.linkEncripted, dto.courseName]
   }
 
-  private danceToLine(danceDto: DanceDto): string[] {
-    return [danceDto.name, danceDto.type, danceDto.music, danceDto.rhythm, danceDto.description, danceDto.links]
+  private danceToLine(dto: DanceDto): string[] {
+    return [dto.name, dto.type, dto.music, dto.rhythm, dto.description, dto.links]
   }
 }

@@ -64,7 +64,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
     }
     this.subscriptions.push(this.form.valueChanges.subscribe(value => {
       if (!this.dance) {
-        this.dance = {} as DanceDto;
+        this.dance = { dtoType: 'Dances' } as DanceDto;
       }
       this.dance.name = value.name;
       this.dance.type = value.type;

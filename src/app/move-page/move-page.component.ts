@@ -100,7 +100,7 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.push(this.moveForm.valueChanges.subscribe(value => {
       console.log(value);
       if (!this.move) {
-        this.move = {} as MoveDto;
+        this.move = { dtoType: 'Moves' } as MoveDto;
       }
       this.move.name = value.name;
       this.move.dance = value.dance;
@@ -170,7 +170,8 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       links: new UntypedFormControl(''),
       location: new UntypedFormControl(''),
       row: new UntypedFormControl(''),
-      courseDates: new UntypedFormArray([])
+      courseDates: new UntypedFormArray([]),
+      dtoType: new UntypedFormControl('Moves')
     });
   }
 
@@ -190,7 +191,8 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
     return new UntypedFormGroup({
       course: new UntypedFormControl(''),
       date: new UntypedFormControl(null),
-      row: new UntypedFormControl('')
+      row: new UntypedFormControl(''),
+      dtoType: new UntypedFormControl('CourseDates')
     });
   }
 

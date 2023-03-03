@@ -109,3 +109,6 @@ export const encodeUriAll = (value: string) => {
 export const escapeRegExp = (text: string) => {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
+
+export type dtoType = 'CourseDates' | 'Moves' | 'Courses' | 'Dances' | 'CourseContents';
+

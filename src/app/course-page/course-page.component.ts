@@ -67,7 +67,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     }
     this.subscriptions.push(this.courseForm.valueChanges.subscribe(value => {
       if (!this.course) {
-        this.course = {} as CourseDto;
+        this.course = { dtoType: 'Courses' } as CourseDto;
       }
       this.course.name = value.name;
       this.course.dances = value.dances;
@@ -121,6 +121,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       password: new UntypedFormControl(''),
       contents: new UntypedFormArray([]),
       row: new UntypedFormControl(''),
+      dtoType: new UntypedFormControl('Courses')
     });
   }
   private readParams(params: ParamMap) {
@@ -139,7 +140,8 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     return new UntypedFormGroup({
       name: new UntypedFormControl(''),
       link: new UntypedFormControl(null),
-      row: new UntypedFormControl('')
+      row: new UntypedFormControl(''),
+      dtoType: new UntypedFormControl('CourseContents')
     });
   }
 
