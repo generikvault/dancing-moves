@@ -54,7 +54,7 @@ export class ApiclientService {
   }
 
   getCourseDates(): Observable<Array<CourseDateDto>> {
-    return this.getAllDataBases('CourseDates!A1:C10000').pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
+    return this.getAllDataBases('CourseDates!A1:D10000').pipe(map(response => this.mapRows<CourseDateDto>(response, this.createCourseDateDto)));
   }
 
   getCourses(): Observable<Array<CourseDto>> {
@@ -149,7 +149,7 @@ export class ApiclientService {
       case 'Courses':
         return `Courses!A${row}:L${row}`;
       case 'CourseDates':
-        return `CourseDates!A${row}:C${row}`;
+        return `CourseDates!A${row}:D${row}`;
       case 'CourseContents':
         return `CourseContents!A${row}:C${row}`;
       default:
