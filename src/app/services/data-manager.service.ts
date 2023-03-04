@@ -91,22 +91,27 @@ export class DataManagerService {
 
   api_get() {
     this.isStarting.next(true);
-    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.apiclientService.getVideos(), courses: this.apiclientService.getCourses() }).subscribe(results => {
-      if (results.moves.length > 0) {
-        this.addLocal(results);
-        this.setDances(results.dances);
-        for (const course of results.courses) {
-          course.contents = results.videos.filter(content => course.name == content.courseName).sort(generateSortFn([c => c.name]));
+    forkJoin({ moves: this.apiclientService.getMoves(), courseDates: this.apiclientService.getCourseDates(), dances: this.apiclientService.getDances(), videos: this.apiclientService.getVideos(), courses: this.apiclientService.getCourses() }).subscribe({
+      next: results => {
+        if (results.moves.length > 0) {
+          this.addLocal(results);
+          this.setDances(results.dances);
+          for (const course of results.courses) {
+            course.contents = results.videos.filter(content => course.name == content.courseName).sort(generateSortFn([c => c.name]));
+          }
+          this.settingsService.initCourses(results.courses);
+          this.setCourses(results.courses);
+          for (const move of results.moves) {
+            move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id).sort(generateSortFn([c => c.date]));
+          }
+          this.setMoves(results.moves);
         }
-        this.settingsService.initCourses(results.courses);
-        this.setCourses(results.courses);
-        for (const move of results.moves) {
-          move.courseDates = results.courseDates.filter(c => c.moveId == move.name || c.moveId == move.id).sort(generateSortFn([c => c.date]));
-        }
-        this.setMoves(results.moves);
+        localStorage.setItem("date", new Date().toISOString());
+        this.isStarting.next(false);
+      }, error: err => {
+        this.logError(err);
+        this.isStarting.next(false)
       }
-      localStorage.setItem("date", new Date().toISOString());
-      this.isStarting.next(false);
     })
   }
 
@@ -209,7 +214,6 @@ export class DataManagerService {
 
   getNextOrder(dance: string | undefined): number {
     const orders = this.movesSubject.value.filter(move => !dance || move.dance == dance).map(move => move.order).sort((a, b) => a - b);
-    console.log(orders);
     return (orders.pop() ?? -1) + 1;
   }
 
@@ -336,10 +340,14 @@ export class DataManagerService {
     next: (response: any) => {
       console.log(response);
     }, error: (response: any) => {
-      console.log(response);
-      this.snackBar.open(`error:${response?.error?.error?.message ?? response?.error?.error_description}`, "OK");
+      this.logError(response);
     }
   })
+
+  private logError(response: any) {
+    console.error(response);
+    this.snackBar.open(`error:${response?.error?.error?.message ?? response?.error?.error_description ?? response?.statusText}`, "OK");
+  }
 
   findDependent(moveName: string): Array<MoveDto> {
     return this.moves.filter(m => m.description.includes(moveName));

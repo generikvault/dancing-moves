@@ -141,14 +141,20 @@ export class DancePageComponent implements OnInit, OnDestroy {
     if (this.form.valid && this.dance) {
       this.loaded = false;
       this.form.disable();
-      this.dataManager.saveOrCreateDance(this.dance).subscribe(m => {
-        console.log(m);
-        this.patchValue(m);
-        this.loaded = true;
-        this.form.enable();
+      this.dataManager.saveOrCreateDance(this.dance).subscribe({
+        next: m => {
+          this.patchValue(m);
+          this.enable();
+        }, error: err => this.enable()
       });
     }
   }
+
+  private enable() {
+    this.loaded = true;
+    this.form.enable();
+  }
+
   onDelete() {
     if (this.dance) {
       this.dataManager.deleteDance(this.dance).subscribe(m => console.log(m));

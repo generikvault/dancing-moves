@@ -171,13 +171,20 @@ export class CoursePageComponent implements OnInit, OnDestroy {
     if (this.courseForm.valid && this.course) {
       this.loaded = false;
       this.courseForm.disable();
-      this.dataManager.saveOrCreateCourse(this.course).subscribe(m => {
-        console.log(m);
-        this.patchValue(m);
-        this.loaded = true;
-        this.courseForm.enable();
+      this.dataManager.saveOrCreateCourse(this.course).subscribe({
+        next: m => {
+          console.log(m);
+          this.patchValue(m);
+          this.loaded = true;
+          this.courseForm.enable();
+        }, error: err => this.enable()
       });
     }
+  }
+
+  private enable() {
+    this.loaded = true;
+    this.courseForm.enable();
   }
 
   onDelete() {

@@ -226,37 +226,39 @@ export class MovePageComponent implements OnInit, OnDestroy, AfterViewInit {
       this.loaded = false;
       this.moveForm.disable();
       this.videonameControl.disable();
-      this.dataManager.saveOrCreate(this.move).subscribe(m => {
-        this.patchValue(m);
-        const newName = m.name;
-        this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
-        if (this.nameOriginal != newName && this.nameOriginal != "new") {
-          const dependentMoves = this.dataManager.findDependent(this.nameOriginal);
-          if (dependentMoves && dependentMoves.length > 0) {
-            dependentMoves.forEach(m => m.description = m.description.replace(this.nameOriginal, newName));
-            this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
-              this.loaded = true;
-              this.moveForm.enable();
-              this.videonameControl.enable();
+      this.dataManager.saveOrCreate(this.move).subscribe({
+        next: m => {
+          this.patchValue(m);
+          const newName = m.name;
+          this.move?.videos?.forEach(v => v.safeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(v.link));
+          if (this.nameOriginal != newName && this.nameOriginal != "new") {
+            const dependentMoves = this.dataManager.findDependent(this.nameOriginal);
+            if (dependentMoves && dependentMoves.length > 0) {
+              dependentMoves.forEach(m => m.description = m.description.replace(this.nameOriginal, newName));
+              this.dataManager.mulitSave(dependentMoves).subscribe(moves => {
+                this.enable();
+                this.navService.navigate(["move", m.id]);
+              });
+            } else {
+              this.enable();
               this.navService.navigate(["move", m.id]);
-            });
+            }
+            this.navService.headlineObservable.next(m.name);
           } else {
-            this.loaded = true;
-            this.moveForm.enable();
-            this.videonameControl.enable();
-            this.navService.navigate(["move", m.id]);
+            this.enable();
+            if (this.idParam == "new") {
+              this.navService.navigate(["move", m.id]);
+            }
           }
-          this.navService.headlineObservable.next(m.name);
-        } else {
-          this.loaded = true;
-          this.moveForm.enable();
-          this.videonameControl.enable();
-          if (this.idParam == "new") {
-            this.navService.navigate(["move", m.id]);
-          }
-        }
+        }, error: err => this.enable()
       });
     }
+  }
+
+  private enable() {
+    this.loaded = true;
+    this.moveForm.enable();
+    this.videonameControl.enable();
   }
 
   onDelete() {
