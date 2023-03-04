@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { UserMode } from '../model/user-mode';
 import { DataManagerService } from '../services/data-manager.service';
 import { NavService } from '../services/nav.service';
 import { SettingsService } from '../services/settings.service';
@@ -16,7 +15,6 @@ import { SettingsService } from '../services/settings.service';
 export class NavComponent implements OnInit {
 
   devMode = !environment.production;
-  readonly = true;
   headline = "Dancing Moves"
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe([Breakpoints.Handset, Breakpoints.Tablet])
@@ -33,7 +31,6 @@ export class NavComponent implements OnInit {
   async ngOnInit() {
     this.navService.headlineObservable.subscribe(headline => this.headline = headline);
     await this.settingsService.loading();
-    this.settingsService.userMode.subscribe(userMode => this.readonly = userMode === UserMode.read);
   }
 
   normalize() {

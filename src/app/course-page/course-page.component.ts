@@ -97,7 +97,7 @@ export class CoursePageComponent implements OnInit, OnDestroy {
       this.patchValue(this.course);
     }
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
-      if (userMode === UserMode.read) {
+      if (userMode === UserMode.read && this.course?.location && this.course?.location != 'local') {
         this.courseForm.disable();
         this.readonly = true;
       } else if (userMode === UserMode.write) {

@@ -80,7 +80,7 @@ export class DancePageComponent implements OnInit, OnDestroy {
       this.patchValue(this.dance);
     }
     this.subscriptions.push(this.settings.userMode.subscribe(userMode => {
-      if (userMode === UserMode.read) {
+      if (userMode === UserMode.read && this.dance?.location && this.dance?.location != 'local') {
         this.form.disable();
         this.readonly = true;
       }

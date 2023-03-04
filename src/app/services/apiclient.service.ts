@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as jwt from 'jwt-simple';
-import { BehaviorSubject, catchError, filter, forkJoin, map, Observable, of, switchMap, take, tap } from 'rxjs';
+import { BehaviorSubject, catchError, defaultIfEmpty, filter, forkJoin, map, Observable, of, switchMap, take, tap } from 'rxjs';
 import { ApiToken } from '../model/api-token';
 import { CourseDateDto } from '../model/course-date-dto';
 import { CourseDto } from '../model/course-dto';
@@ -50,7 +50,7 @@ export class ApiclientService {
 
   private getAllDataBases(sheetRange: string): Observable<ResponseGet[]> {
     return forkJoin(this.settingsService.dataBases.map(d => this.spreadsheetsGet(d.spreadsheetId, sheetRange
-    )));
+    ))).pipe(defaultIfEmpty([]));
   }
 
   getCourseDates(): Observable<Array<CourseDateDto>> {
