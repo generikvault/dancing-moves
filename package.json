@@ -26,7 +26,7 @@
     "ionic:serve": "npm run start",
     "upgrade:angular": "ng update @angular/core @angular/compiler @angular-builders/custom-webpack @angular-devkit/build-angular @angular/cdk @angular/material @angular/cli",
     "upgrade:packges": "npx npm-check-updates --upgrade",
-    "update:version": "update_version.sh \"0.1.20\" 120"
+    "update:version": "update_version.sh \"0.1.20\" 120 && npm run android:release"
   },
   "private": true,
   "dependencies": {
