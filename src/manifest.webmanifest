@@ -1,0 +1,17 @@
+{
+  "name": "dancing-moves",
+  "short_name": "dancing-moves",
+  "theme_color": "#1976d2",
+  "background_color": "#fafafa",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "assets/woman-dancing-svgrepo-com.svg",
+      "sizes": "72x72",
+      "type": "image/svg",
+      "purpose": "maskable any"
+    }
+  ]
+}
