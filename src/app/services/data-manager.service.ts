@@ -268,7 +268,6 @@ export class DataManagerService {
       .forEach(m => description = description.replaceAll(this.createRegExp(`${m.dance}/${m.name}`), `$1[${m.dance}/${m.name}](move/${m.id})`))
     this.coursesLenghtSorted
       .forEach(course => description = description.replaceAll(this.createRegExp(course.name), `$1[${course.name}](course/${encodeURI(course.name)})`))
-    console.log(description)
     return description;
   }
 
@@ -498,6 +497,25 @@ export class DataManagerService {
 
   async normalize() {
     console.log('normalize');
+    for (const dance of this.danceNames) {
+      const moves = deepCopy(this.moves.filter(m => m.dance == dance));
+      if (moves.length > 0) {
+        moves.sort(generateSortFn([c => c.order]));
+        let lastOrder = -1;
+        for (const move of moves) {
+          if (move.order <= lastOrder) {
+            console.log(dance, move.name, move.order, lastOrder + 1)
+            move.order = lastOrder + 1;
+            this.saveOrCreate(move).subscribe(m => console.log(move));
+          }
+          lastOrder++;
+        }
+      }
+    }
+  }
+
+  async normalizeCourse() {
+    console.log('normalizeCourse');
     for (const course of this.courses) {
       this.saveOrCreateCourse(course).subscribe(console.log);
       await delay(10000);
