@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: Google Play
 
 on:
   push:
@@ -41,6 +41,13 @@ jobs:
         run: npm ci
         env:
           NPM_AUTH_TOKEN: ${{ secrets.TOKEN_GITHUB_ACTION }}
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: "zulu"
+          java-version: "11"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v2
       - name: Build
         run: npm run android:release
       - name: Upload Android Release to Play Store
