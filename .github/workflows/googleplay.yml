@@ -47,7 +47,7 @@ jobs:
           distribution: "zulu"
           java-version: "11"
       - name: Build
-        run: ng build --configuration android-prod --base-href ./
+        run: npm run android:build:prod
       - name: Copy
         run: npx cap copy android
       - name: Bundle
