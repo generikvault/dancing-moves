@@ -42,16 +42,22 @@ jobs:
         env:
           NPM_AUTH_TOKEN: ${{ secrets.TOKEN_GITHUB_ACTION }}
       - name: Set up JDK
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v3
         with:
           distribution: "zulu"
           java-version: "11"
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v2
       - name: Build
-        run: npm run android:release
+        run: ng build --configuration android-prod --base-href ./
+      - name: Copy
+        run: npx cap copy android
+      - name: Bundle
+        run: cd android && gradle bundleRelease
+      - name: Upload release bundle
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 60
       - name: Upload Android Release to Play Store
         uses: r0adkll/upload-google-play@v1
         with:
